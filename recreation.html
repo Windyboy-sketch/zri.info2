@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>zri.info</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #1e1e1e;
+      font-family: sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 8rem;
+      font-weight: bold;
+      color: #a259ff;
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+
+    .button {
+      background-color: #01110e;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 20px 40px;
+      margin: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 200px;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .button:hover {
+      background-color: #02221c;
+    }
+
+    .icon {
+      display: block;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .sidebar-text {
+      position: absolute;
+      top: 10px;
+      left: 60px;
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .hamburger {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+    }
+
+    .status-bar {
+      position: absolute;
+      top: 5px;
+      right: 20px;
+      font-size: 0.8rem;
+      color: white;
+    }
+
+    .bottom-bar {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="status-bar" id="clock">--:--</div>
+  <div class="hamburger">&#9776;</div>
+  <div class="sidebar-text">Click the sidebar for more options</div>
+
+  <div class="title">
+    zri<br>.info
+  </div>
+
+  <div class="subtitle">
+    A site for local games, movies, proxies, and other cool things
+  </div>
+
+  <a href="games.html" class="button">
+    <span class="icon">▶</span>
+    Games
+  </a>
+  
+  <a href="proxy.html" class="button">
+    <span class="icon">⏻</span>
+    Proxy
+  </a>
+
+  <div class="bottom-bar">━</div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      document.getElementById('clock').textContent = `${hours}:${minutes}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>

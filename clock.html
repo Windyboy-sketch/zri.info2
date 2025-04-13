@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live Clock</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-size: 4rem;
+    }
+
+    #clock {
+      color: #a259ff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- The element where the clock will appear -->
+  <div id="clock">Loading...</div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+
+      // Format with leading zeros
+      hours = hours < 10 ? "0" + hours : hours;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+
+      document.getElementById("clock").textContent = `${hours}:${minutes}`;
+    }
+
+    // Call once to show immediately
+    updateClock();
+
+    // Update every second
+    setInterval(updateClock, 1000);
+  </script>
+
+</body>
+</html>

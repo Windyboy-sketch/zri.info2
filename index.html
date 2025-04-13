@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>zri</title>
+    <title>zri.info</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -14,17 +15,29 @@
 
         body {
             font-family: 'Roboto', sans-serif;
-            background: #0a0a0a;
+            background: linear-gradient(45deg, #0a0a0a, #1a1a1a, #0a0a0a);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
             color: #ffffff;
             line-height: 1.5;
             position: relative;
             overflow: hidden;
+            transition: opacity 0.5s ease;
+        }
+
+        body.fade-out {
+            opacity: 0;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .stars {
@@ -39,21 +52,31 @@
 
         .star {
             position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #ffffff;
+            width: 3px;
+            height: 3px;
+            background: #a259ff;
             border-radius: 50%;
-            box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 8px rgba(162, 89, 255, 0.8), 0 0 12px rgba(162, 89, 255, 0.5);
+        }
+
+        .star::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(162, 89, 255, 0.5));
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         h1 {
-            font-size: 3.5em;
-            color: #ffffff;
+            font-size: 6em;
+            color: #a259ff;
             margin: 20px 0;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         p {
@@ -62,34 +85,67 @@
             max-width: 700px;
             text-align: center;
             margin: 1rem 0;
-            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .clock-container {
+            margin: 1rem 0;
+            padding: 10px 20px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 8px;
+            color: #a259ff;
+            font-size: 1.2em;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 0 15px #a259ff33;
         }
 
         .button-container {
             margin: 2.5rem 0;
-            position: relative;
             display: flex;
+            flex-direction: column;
             gap: 20px;
+            align-items: center;
+        }
+
+        a {
+            text-decoration: none;
         }
 
         button {
             padding: 15px 40px;
             background: #1f1f1f;
-            border: 1px solid #ffffff;
-            border-radius: 12px;
+            border: none;
+            border-radius: 8px;
             color: #ffffff;
             font-size: 1.4em;
             font-weight: 700;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 200px;
+            justify-content: center;
+            box-shadow: 0 0 10px #a259ff33;
         }
 
         button:hover {
+            background: #333;
             transform: scale(1.05);
+            box-shadow: 0 0 20px #a259ff66;
         }
 
         button:before {
@@ -100,160 +156,213 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: left 0.5s ease;
         }
 
         button:hover:before {
             left: 100%;
         }
 
-        /* Modal Styles */
-        .modal {
+        .play-icon::before {
+            content: '▶';
+            font-size: 1em;
+        }
+
+        .proxy-icon::before {
+            content: '🔌';
+            font-size: 1em;
+        }
+
+        /* Beta Code Overlay Styles */
+        .beta-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            min-height: 100vh; /* Ensure full viewport height */
+            background: rgba(10, 10, 10, 0.95);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 2000;
+            padding: 20px; /* Add padding to prevent content from touching edges */
         }
 
-        .modal-content {
-            background: #1f1f1f;
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid #ffffff;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .beta-overlay.hidden {
+            display: none;
         }
 
-        .modal-content h2 {
-            font-size: 2em;
+        .beta-overlay h2 {
+            font-size: 2.5em;
+            color: #a259ff;
             margin-bottom: 20px;
-            color: #ffffff;
+            text-align: center;
         }
 
-        .modal-content input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ffffff;
+        .beta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center child elements horizontally */
+            gap: 15px;
+            background: rgba(26, 26, 26, 0.9);
+            padding: 20px;
             border-radius: 8px;
-            background: #0a0a0a;
-            color: #ffffff;
-            font-size: 1em;
-        }
-
-        .modal-content button {
+            box-shadow: 0 0 15px #a259ff33;
             width: 100%;
-            margin-top: 20px;
+            max-width: 400px; /* Limit width for better appearance */
         }
 
-        .error {
+        .beta-input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #333;
+            color: #fff;
+            font-size: 1em;
+            width: 100%; /* Full width of container */
+            max-width: 250px; /* Limit input width */
+        }
+
+        .beta-submit {
+            padding: 10px;
+            background: #a259ff;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%; /* Full width of container */
+            max-width: 250px; /* Match input width */
+        }
+
+        .beta-submit:hover {
+            background: #c084fc;
+        }
+
+        .beta-error {
             color: #ff5555;
             font-size: 0.9em;
+            text-align: center;
             margin-top: 10px;
             display: none;
         }
 
-        .hidden {
+        .beta-error.visible {
+            display: block;
+        }
+
+        .main-content {
             display: none;
+            width: 100%;
+            padding: 20px; /* Match body padding for consistency */
         }
 
-        @keyframes slideInLeft {
-            from { transform: translateX(-50px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideInUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        .main-content.visible {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 2.2em; }
+            h1 { font-size: 3em; }
             p { font-size: 1em; }
-            button { padding: 12px 30px; font-size: 1.2em; }
-            .button-container { flex-direction: column; gap: 10px; }
-            .modal-content { padding: 20px; }
-            .modal-content h2 { font-size: 1.5em; }
+            .clock-container { font-size: 1em; }
+            button { padding: 12px 30px; font-size: 1.2em; width: 150px; }
+            .beta-overlay h2 {
+                font-size: 1.8em;
+            }
+            .beta-container {
+                padding: 15px;
+                max-width: 300px;
+            }
+            .beta-input, .beta-submit {
+                max-width: 200px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <h2>Beta Tester Login</h2>
-            <input type="text" id="username" placeholder="Enter Username" autocomplete="off">
-            <input type="text" id="betaKey" placeholder="Enter Beta Key" autocomplete="off">
-            <button onclick="validateLogin()">Submit</button>
-            <p class="error" id="errorMessage">Invalid username or beta key.</p>
+    <div class="beta-overlay" id="betaOverlay">
+        <h2>zri.info - Beta Access</h2>
+        <div class="beta-container">
+            <input type="text" class="beta-input" id="betaInput" placeholder="Enter Beta Code">
+            <button class="beta-submit" onclick="checkBetaCode()">Submit</button>
+            <div class="beta-error" id="betaError">Invalid beta code. Please try again.</div>
         </div>
     </div>
 
-    <div class="stars"></div>
-    <div class="content hidden" id="mainContent">
+    <div class="main-content" id="mainContent">
+        <div class="stars"></div>
+
         <h1>zri.info</h1>
-        <p>welcome to zri, a fun website to go on during your free time.</p>
+        <div class="clock-container" id="clock"></div>
+        <p>A site for local games, movies, proxies, and other cool things</p>
         <div class="button-container">
-            <a href="game.html"><button>Games</button></a>
-            <a href="movies.html"><button>Movies</button></a>
+            <a href="game.html" id="gamesLink"><button><span class="play-icon"></span> Games</button></a>
+            <a href="proxy.html"><button><span class="proxy-icon"></span> Proxy</button></a>
         </div>
-        <p>this website is in VERY VERY early progress, it is not nearly it's best right now and expect some games to not function as intended.</p>
     </div>
 
     <script>
-        // Predefined users and their beta keys
-        const betaTesters = {
-            "Parker": "KX7P-N4M8-Q2J5",
-            "Gavyn": "F9HB-T6R3-W8C4"
-        };
+        // Beta Code Access Control
+        const betaCode = "zri.2xCD3f@1.FlwpW@1CXOXUXNXTXTXEXOXDXORXHXAXIXLXTXHXEXUXNXDXEXRXGXRXOXUXNXD"; // Predefined beta code
+        const betaOverlay = document.getElementById('betaOverlay');
+        const betaInput = document.getElementById('betaInput');
+        const betaError = document.getElementById('betaError');
+        const mainContent = document.getElementById('mainContent');
 
-        function validateLogin() {
-            const username = document.getElementById("username").value.trim();
-            const betaKey = document.getElementById("betaKey").value.trim();
-            const errorMessage = document.getElementById("errorMessage");
-            const loginModal = document.getElementById("loginModal");
-            const mainContent = document.getElementById("mainContent");
+        // Check if already authenticated
+        if (localStorage.getItem('betaAccess') === 'true') {
+            betaOverlay.classList.add('hidden');
+            mainContent.classList.add('visible');
+        }
 
-            if (betaTesters[username] && betaTesters[username] === betaKey) {
-                loginModal.style.display = "none";
-                mainContent.classList.remove("hidden");
+        // Check beta code on submit
+        function checkBetaCode() {
+            const enteredCode = betaInput.value.trim();
+            if (enteredCode === betaCode) {
+                localStorage.setItem('betaAccess', 'true');
+                betaOverlay.classList.add('hidden');
+                mainContent.classList.add('visible');
+                betaInput.value = '';
+                betaError.classList.remove('visible');
+                startAnimations();
             } else {
-                errorMessage.style.display = "block";
+                betaError.classList.add('visible');
+                betaInput.value = '';
             }
         }
 
-        // Allow Enter key to submit
-        document.getElementById("betaKey").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                validateLogin();
+        // Allow Enter key to submit beta code
+        betaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkBetaCode();
             }
         });
 
-        document.getElementById("username").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                validateLogin();
-            }
-        });
+        // Dynamic Clock
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour12: false });
+            const date = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('clock').textContent = `${time} | ${date}`;
+        }
 
-        // Star animation
+        // Purple Shooting Stars Animation
         const starsContainer = document.querySelector('.stars');
         function createStar() {
             const star = document.createElement('div');
             star.className = 'star';
             const x = Math.random() * 100;
-            const duration = Math.random() * 2 + 1;
+            const duration = Math.random() * 1.5 + 1;
             star.style.left = `${x}%`;
             star.style.top = `${Math.random() * 100}%`;
             star.style.animation = `shoot ${duration}s linear infinite`;
@@ -270,7 +379,20 @@
             }
         `, styleSheet.cssRules.length);
 
-        setInterval(createStar, 200);
+        function startAnimations() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            setInterval(createStar, 150);
+        }
+
+        // Fade-Out Animation on Games Link Click
+        document.getElementById('gamesLink')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 500);
+        });
     </script>
 </body>
 </html>
