@@ -356,54 +356,17 @@ Game: Doom, Issue: 404 Not Found or File Typo in Games Table
     </div>
 
     <script>
-        // Beta Code Access Control
-        const betaCode = "zri.2xCD3f@1.FlwpW@1CXOXUXNXTXTXEXOXDXORXHXAXIXLXTXHXEXUXNXDXEXRXGXRXOXUXNXD"; // Predefined beta code
-        const betaOverlay = document.getElementById('betaOverlay');
-        const betaInput = document.getElementById('betaInput');
-        const betaError = document.getElementById('betaError');
-        const mainContent = document.getElementById('mainContent');
-
-        // Check if already authenticated
-        if (localStorage.getItem('betaAccess') === 'true') {
-            betaOverlay.classList.add('hidden');
-            mainContent.classList.add('visible');
-        }
-
-        // Check beta code on submit
-        function checkBetaCode() {
-            const enteredCode = betaInput.value.trim();
-            if (enteredCode === betaCode) {
-                localStorage.setItem('betaAccess', 'true');
-                betaOverlay.classList.add('hidden');
-                mainContent.classList.add('visible');
-                betaInput.value = '';
-                betaError.classList.remove('visible');
-                startAnimations();
-            } else {
-                betaError.classList.add('visible');
-                betaInput.value = '';
-            }
-        }
-
-        // Allow Enter key to submit beta code
-        betaInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                checkBetaCode();
-            }
+        // Split Header into Letters for Animation
+        const title = document.getElementById('title');
+        const text = title.textContent;
+        title.innerHTML = '';
+        text.split('').forEach((char, index) => {
+            const span = document.createElement('span');
+            span.className = 'letter';
+            span.textContent = char;
+            span.style.setProperty('--index', index);
+            title.appendChild(span);
         });
-
-        // Dynamic Clock
-        function updateClock() {
-            const now = new Date();
-            const time = now.toLocaleTimeString('en-US', { hour12: false });
-            const date = now.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            document.getElementById('clock').textContent = `${time} | ${date}`;
-        }
 
         // Particle Animations (Stars)
         const starsContainer = document.querySelector('.stars');
