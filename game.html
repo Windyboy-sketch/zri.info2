@@ -4,31 +4,77 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Games - zri.info</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      background: linear-gradient(45deg, #0a0a0a, #1a1a1a, #0a0a0a);
-      background-size: 200% 200%;
-      animation: gradientShift 15s ease infinite;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
       color: #ccc;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
       padding: 2rem;
       position: relative;
       overflow-x: hidden;
     }
 
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* Enhanced Wave Effect with Vertical Movement */
+    .wave-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      overflow: hidden;
+      z-index: -1;
     }
 
+    .wave {
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 100%;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(162, 89, 255, 0.7)" fill-opacity="1" d="M0,128C48,112,96,96,144,96C192,96,240,112,288,128C336,144,384,160,432,160C480,160,528,144,576,128C624,112,672,96,720,96C768,96,816,112,864,128C912,144,960,160,1008,160C1056,160,1104,144,1152,128C1200,112,1248,96,1296,96C1344,96,1392,112,1440,128L1440,320L0,320Z"></path></svg>') repeat-x;
+      background-size: 50% 100%;
+      animation: waveMove 12s ease-in-out infinite, waveFloat 5s ease-in-out infinite;
+      opacity: 0.7;
+      filter: drop-shadow(0 -1px 4px rgba(162, 89, 255, 0.3));
+    }
+
+    .wave:nth-child(2) {
+      animation: waveMove 15s ease-in-out infinite reverse, waveFloat 6s ease-in-out infinite;
+      opacity: 0.5;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(120, 50, 200, 0.6)" fill-opacity="1" d="M0,160C48,144,96,128,144,128C192,128,240,144,288,160C336,176,384,192,432,192C480,192,528,176,576,160C624,144,672,128,720,128C768,128,816,144,864,160C912,176,960,192,1008,192C1056,192,1104,176,1152,160C1200,144,1248,128,1296,128C1344,128,1392,144,1440,160L1440,320L0,320Z"></path></svg>') repeat-x;
+      filter: drop-shadow(0 -1px 3px rgba(120, 50, 200, 0.2));
+    }
+
+    .wave:nth-child(3) {
+      animation: waveMove 10s ease-in-out infinite, waveFloat 4s ease-in-out infinite;
+      opacity: 0.3;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(80, 30, 150, 0.5)" fill-opacity="1" d="M0,192C48,176,96,160,144,160C192,160,240,176,288,192C336,208,384,224,432,224C480,224,528,208,576,192C624,176,672,160,720,160C768,160,816,176,864,192C912,208,960,224,1008,224C1056,224,1104,208,1152,192C1200,176,1248,160,1296,160C1344,160,1392,176,1440,192L1440,320L0,320Z"></path></svg>') repeat-x;
+      filter: drop-shadow(0 -1px 2px rgba(80, 30, 150, 0.1));
+    }
+
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(-25%); }
+      100% { transform: translateX(0); }
+    }
+
+    @keyframes waveFloat {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    /* Shooting Stars (Kept as Original) */
     .stars {
       position: fixed;
       top: 0;
@@ -41,35 +87,72 @@
 
     .star {
       position: absolute;
-      width: 3px;
-      height: 3px;
+      width: 5px;
+      height: 5px;
       background: #a259ff;
       border-radius: 50%;
-      box-shadow: 0 0 8px rgba(162, 89, 255, 0.8), 0 0 12px rgba(162, 89, 255, 0.5);
+      box-shadow: 0 0 12px rgba(162, 89, 255, 0.9), 0 0 18px rgba(162, 89, 255, 0.6);
+      animation: shoot 3s linear forwards;
     }
 
     .star::before {
       content: '';
       position: absolute;
-      width: 20px;
+      width: 30px;
       height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(162, 89, 255, 0.5));
-      left: -20px;
+      background: linear-gradient(90deg, transparent, rgba(162, 89, 255, 0.7));
+      left: -30px;
       top: 50%;
       transform: translateY(-50%);
     }
 
+    @keyframes shoot {
+      0% { transform: translateX(0) translateY(0); opacity: 1; }
+      100% { transform: translateX(-120vw) translateY(80vh); opacity: 0.3; }
+    }
+
+    /* Letter-by-Letter Animation for Header */
     h1 {
-      font-size: 3rem;
+      font-size: 4rem;
       color: #a259ff;
       margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+    }
+
+    .letter {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: letterReveal 0.5s ease forwards;
+      animation-delay: calc(var(--index) * 0.1s);
+    }
+
+    @keyframes letterReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .description {
-      font-size: 1rem;
-      color: #888;
+      font-size: 1.2rem;
+      color: #d0d0d0;
       margin-bottom: 2rem;
       text-align: center;
+      max-width: 800px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.5s;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .controls {
@@ -79,29 +162,78 @@
       margin-bottom: 2rem;
       justify-content: center;
       align-items: center;
+      background: rgba(26, 26, 26, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(162, 89, 255, 0.3);
+      animation: borderGlow 5s linear infinite;
+    }
+
+    @keyframes borderGlow {
+      0% { border-color: rgba(162, 89, 255, 0.3); }
+      50% { border-color: rgba(255, 119, 255, 0.5); }
+      100% { border-color: rgba(162, 89, 255, 0.3); }
+    }
+
+    .controls > * {
+      opacity: 0;
+      transform: translateX(-30px);
+      animation: slideIn 0.8s ease forwards;
+      animation-delay: calc(var(--index) * 0.2s);
+    }
+
+    .controls > *:nth-child(1) { --index: 0; }
+    .controls > *:nth-child(2) { --index: 1; }
+    .controls > *:nth-child(3) { --index: 2; }
+    .controls > *:nth-child(4) { --index: 3; }
+    .controls > *:nth-child(5) { --index: 4; }
+
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
     .search-bar {
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1.2rem;
       border: none;
       border-radius: 8px;
-      background-color: #222;
+      background: #1f1f1f;
       color: #fff;
-      width: 200px;
+      width: 250px;
+      transition: box-shadow 0.3s;
+    }
+
+    .search-bar:focus {
+      outline: none;
+      box-shadow: 0 0 10px rgba(162, 89, 255, 0.5);
     }
 
     .filter-bar select,
     .sort-bar select {
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1.2rem;
       border: none;
       border-radius: 8px;
-      background-color: #222;
+      background: #1f1f1f;
       color: #fff;
+      transition: box-shadow 0.3s;
+    }
+
+    .filter-bar select:focus,
+    .sort-bar select:focus {
+      outline: none;
+      box-shadow: 0 0 10px rgba(162, 89, 255, 0.5);
     }
 
     .filter-bar label {
       margin-right: 0.5rem;
-      color: #ccc;
+      color: #d0d0d0;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .game-grid {
@@ -110,63 +242,95 @@
       gap: 1.5rem;
       width: 100%;
       max-width: 1200px;
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 15px rgba(162, 89, 255, 0.3); }
+      50% { box-shadow: 0 0 25px rgba(162, 89, 255, 0.5); }
+      100% { box-shadow: 0 0 15px rgba(162, 89, 255, 0.3); }
     }
 
     .game-card {
-      background-color: #1a1a1a;
-      padding: 1rem;
+      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+      padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 0 15px #a259ff33;
+      box-shadow: 0 0 15px rgba(162, 89, 255, 0.2);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       position: relative;
       overflow: hidden;
       opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInCard 0.5s ease forwards;
+      transform: scale(0.95);
+      animation: cardPopIn 0.4s ease forwards;
       animation-delay: calc(var(--index) * 0.1s);
     }
 
-    @keyframes fadeInCard {
+    @keyframes cardPopIn {
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: scale(1);
       }
     }
 
     .game-card:hover {
-      transform: translateY(-5px) rotate(2deg);
-      box-shadow: 0 0 25px #a259ff66;
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 0 25px rgba(162, 89, 255, 0.6);
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 50%, rgba(162, 89, 255, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+
+    .game-card:hover::before {
+      opacity: 1;
     }
 
     .game-card h2 {
-      font-size: 1.2rem;
-      margin: 0 0 0.5rem 0;
+      font-size: 1.3rem;
+      margin: 0 0 0.6rem 0;
       color: #fff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      text-transform: capitalize;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
 
     .game-card p {
-      margin: 0.3rem 0;
-      font-size: 0.8rem;
+      margin: 0.4rem 0;
+      font-size: 0.9rem;
+      color: #d0d0d0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .play-button {
       display: block;
-      padding: 0.4rem 0.8rem;
-      background-color: #a259ff;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #a259ff 0%, #c084fc 100%);
       color: #fff;
       text-decoration: none;
       border-radius: 8px;
-      margin-top: 0.8rem;
-      transition: background 0.3s;
+      margin-top: 1rem;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(162, 89, 255, 0.4);
     }
 
     .play-button:hover {
-      background-color: #c084fc;
+      background: linear-gradient(135deg, #c084fc 0%, #a259ff 100%);
+      transform: scale(1.05);
+      box-shadow: 0 2px 15px rgba(162, 89, 255, 0.6);
     }
 
     .favorite-button {
@@ -176,13 +340,18 @@
       background: none;
       border: none;
       color: #ccc;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       cursor: pointer;
-      transition: color 0.3s;
+      transition: color 0.3s, transform 0.3s;
     }
 
     .favorite-button.favorited {
       color: #a259ff;
+      transform: scale(1.2);
+    }
+
+    .favorite-button:hover {
+      color: #ff77ff;
     }
 
     .pagination {
@@ -190,58 +359,137 @@
       gap: 1rem;
       margin-top: 2rem;
       align-items: center;
+      background: rgba(26, 26, 26, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 2px solid rgba(162, 89, 255, 0.3);
+      animation: borderGlow 5s linear infinite;
     }
 
     .pagination button {
-      background-color: #222;
+      background: linear-gradient(135deg, #a259ff 0%, #c084fc 100%);
       color: #fff;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1.2rem;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(162, 89, 255, 0.4);
     }
 
     .pagination button:hover:not(:disabled) {
-      background-color: #444;
+      background: linear-gradient(135deg, #c084fc 0%, #a259ff 100%);
+      transform: scale(1.05);
+      box-shadow: 0 2px 15px rgba(162, 89, 255, 0.6);
     }
 
     .pagination button:disabled {
-      background-color: #555;
+      background: #555;
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     .pagination span {
-      color: #ccc;
+      color: #d0d0d0;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .report-section {
+      margin-top: 3rem;
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+      background: rgba(26, 26, 26, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 2px solid rgba(162, 89, 255, 0.3);
+      animation: borderGlow 5s linear infinite;
+    }
+
+    .report-section h2 {
+      font-size: 2rem;
+      color: #a259ff;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.5s;
+      text-shadow: 0 0 10px rgba(162, 89, 255, 0.5);
+    }
+
+    .report-section p {
+      font-size: 1.1rem;
+      color: #d0d0d0;
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.7s;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .report-section pre {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1rem;
+      color: #d0d0d0;
+      background: rgba(50, 50, 50, 0.3);
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: left;
+      white-space: pre-wrap;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.9s;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     footer {
       margin-top: 3rem;
       font-size: 0.9rem;
-      color: #555;
+      color: #d0d0d0;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 1s;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .back-link {
-      margin-bottom: 2rem;
-      align-self: flex-start;
+      position: fixed;
+      top: 20px;
+      left: 20px;
       color: #a259ff;
       text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: color 0.3s;
+      z-index: 1000;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .back-link:hover {
+      color: #c084fc;
       text-decoration: underline;
     }
 
     .error-message {
-      color: #ff5555;
+      color: #ff6666;
       text-align: center;
+      font-size: 1rem;
+      margin: 2rem 0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .back-to-top {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background-color: #a259ff;
+      background: linear-gradient(135deg, #a259ff 0%, #c084fc 100%);
       color: #fff;
       border: none;
       border-radius: 50%;
@@ -253,8 +501,9 @@
       font-size: 1.5rem;
       cursor: pointer;
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: opacity 0.3s, transform 0.3s, box-shadow 0.3s;
       z-index: 1000;
+      box-shadow: 0 2px 10px rgba(162, 89, 255, 0.4);
     }
 
     .back-to-top.visible {
@@ -262,35 +511,50 @@
     }
 
     .back-to-top:hover {
-      background-color: #c084fc;
+      background: linear-gradient(135deg, #c084fc 0%, #a259ff 100%);
+      transform: scale(1.1);
+      box-shadow: 0 2px 15px rgba(162, 89, 255, 0.6);
     }
 
     @media (max-width: 768px) {
-      h1 { font-size: 2rem; }
-      .description { font-size: 0.9rem; }
+      h1 { font-size: 2.5rem; }
+      .description { font-size: 1rem; }
       .controls { flex-direction: column; }
-      .search-bar, .filter-bar select, .sort-bar select { width: 100%; }
-      .game-grid { 
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .game-card h2 { font-size: 1rem; }
-      .game-card p { font-size: 0.7rem; }
-      .play-button { font-size: 0.8rem; padding: 0.3rem 0.6rem; }
-      .favorite-button { font-size: 1rem; }
-      .back-to-top {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-      }
+      .search-bar { width: 100%; }
+      .filter-bar select, .sort-bar select { width: 100%; }
+      .game-grid { grid-template-columns: repeat(2, 1fr); }
+      .game-card h2 { font-size: 1.1rem; }
+      .game-card p { font-size: 0.8rem; }
+      .play-button { font-size: 0.9rem; padding: 0.4rem 0.8rem; }
+      .favorite-button { font-size: 1.2rem; }
+      .back-to-top { width: 40px; height: 40px; font-size: 1.2rem; }
+      .wave-container { height: 60px; }
+      .report-section h2 { font-size: 1.5rem; }
+      .report-section p { font-size: 0.9rem; }
+      .report-section pre { font-size: 0.8rem; padding: 0.8rem; }
+    }
+
+    @media (max-width: 480px) {
+      .game-grid { grid-template-columns: 1fr; }
+      .controls { padding: 0.8rem; }
+      h1 { font-size: 2rem; }
+      .report-section h2 { font-size: 1.3rem; }
+      .report-section p { font-size: 0.8rem; }
+      .report-section pre { font-size: 0.7rem; }
     }
   </style>
 </head>
 <body>
   <div class="stars"></div>
+  <div class="wave-container">
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
   <a class="back-link" href="index.html">← Back to Home</a>
 
-  <h1>Games</h1>
-  <p class="description">Browse local games available through zri.info</p>
+  <h1 id="title">Games</h1>
+  <p class="description">Explore local games on zri.info</p>
 
   <div class="controls">
     <input type="text" class="search-bar" id="searchBar" placeholder="Search games..." oninput="applyFilters()">
@@ -340,6 +604,14 @@
     <button onclick="nextPage()" id="nextBtn">Next</button>
   </div>
 
+  <div class="report-section">
+    <h2>Game Issues Report</h2>
+    <p>The following games have been reported as non-functional. Please address these issues to improve the user experience:</p>
+    <pre>
+     none!
+    </pre>
+  </div>
+
   <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
 
   <footer>
@@ -347,149 +619,20 @@
   </footer>
 
   <script>
-    // Game data
-    const games = [
-      { title: "2048", platform: "Windows", genre: "Puzzle", path: "games/2048/index.html" },
-      { title: "adarkroom", platform: "Windows", genre: "Horror", path: "games/adarkroom/index.html" },
-      { title: "asciispace", platform: "Linux", genre: "Action", path: "games/asciispace/index.html" },
-      { title: "assessmentexamination", platform: "Windows", genre: "Puzzle", path: "games/assessmentexamination/index.html" },
-      { title: "asteroids", platform: "Linux", genre: "Action", path: "games/asteroids/index.html" },
-      { title: "astray", platform: "Windows", genre: "Horror", path: "games/astray/index.html" },
-      { title: "backcountry", platform: "Linux", genre: "RPG", path: "games/backcountry/index.html" },
-      { title: "baldisbasics", platform: "Windows", genre: "Horror", path: "games/baldisbasics/index.html" },
-      { title: "basketballlegends", platform: "Windows", genre: "Action", path: "games/basketballlegends/index.html" },
-      { title: "basketballstars", platform: "Windows", genre: "Action", path: "games/basketballstars/index.html" },
-      { title: "basketbrosio", platform: "Linux", genre: "Action", path: "games/basketbrosio/index.html" },
-      { title: "basketrandom", platform: "Windows", genre: "Action", path: "games/basketrandom/index.html" },
-      { title: "bitlife", platform: "Linux", genre: "RPG", path: "games/bitlife/index.html" },
-      { title: "blackholesquare", platform: "Windows", genre: "Puzzle", path: "games/blackholesquare/index.html" },
-      { title: "bounceback", platform: "Linux", genre: "Action", path: "games/bounceback/index.html" },
-      { title: "boxingrandom", platform: "Windows", genre: "Action", path: "games/boxingrandom/index.html" },
-      { title: "breakout", platform: "Linux", genre: "Action", path: "games/breakout/index.html" },
-      { title: "btd4", platform: "Windows", genre: "Action", path: "games/btd4/index.html" },
-      { title: "captaincallisto", platform: "Linux", genre: "Action", path: "games/captaincallisto/index.html" },
-      { title: "chess", platform: "Windows", genre: "Puzzle", path: "games/chess/index.html" },
-      { title: "chromanichord", platform: "Linux", genre: "Puzzle", path: "games/chromanichord/index.html" },
-      { title: "chromedino", platform: "Windows", genre: "Action", path: "games/chromedino/index.html" },
-      { title: "clickerheroes", platform: "Linux", genre: "RPG", path: "games/clickerheroes/index.html" },
-      { title: "clusterush", platform: "Windows", genre: "Action", path: "games/clusterush/index.html" },
-      { title: "connect3", platform: "Linux", genre: "Puzzle", path: "games/connect3/index.html" },
-      { title: "cookieclicker", platform: "Windows", genre: "Action", path: "games/cookieclicker/index.html" },
-      { title: "crossyroad", platform: "Linux", genre: "Action", path: "games/crossyroad/index.html" },
-      { title: "csgoclicker", platform: "Windows", genre: "Action", path: "games/csgoclicker/index.html" },
-      { title: "cubefield", platform: "Linux", genre: "Action", path: "games/cubefield/index.html" },
-      { title: "cubitomayhem", platform: "Windows", genre: "Action", path: "games/cubitomayhem/index.html" },
-      { title: "cuttherope", platform: "Linux", genre: "Puzzle", path: "games/cuttherope/index.html" },
-      { title: "cuttheropeholiday", platform: "Windows", genre: "Puzzle", path: "games/cuttheropeholiday/index.html" },
-      { title: "cuttheropetimetravel", platform: "Linux", genre: "Puzzle", path: "games/cuttheropetimetravel/index.html" },
-      { title: "deathrun3d", platform: "Windows", genre: "Action", path: "games/deathrun3d/index.html" },
-      { title: "deepestsword", platform: "Linux", genre: "Action", path: "games/deepestsword/index.html" },
-      { title: "doodlejump", platform: "Windows", genre: "Action", path: "games/doodlejump/index.html" },
-      { title: "doom", platform: "Linux", genre: "Action", path: "games/doom/index.html" },
-      { title: "drawthehill", platform: "Windows", genre: "Puzzle", path: "games/drawthehill/index.html" },
-      { title: "drift", platform: "Linux", genre: "Action", path: "games/drift/index.html" },
-      { title: "drifthunters", platform: "Windows", genre: "Action", path: "games/drifthunters/index.html" },
-      { title: "drivemad", platform: "Linux", genre: "Action", path: "games/drivemad/index.html" },
-      { title: "ducklife", platform: "Windows", genre: "RPG", path: "games/ducklife/index.html" },
-      { title: "ducklife2", platform: "Linux", genre: "RPG", path: "games/ducklife2/index.html" },
-      { title: "ducklife3", platform: "Windows", genre: "RPG", path: "games/ducklife3/index.html" },
-      { title: "ducklife4", platform: "Linux", genre: "RPG", path: "games/ducklife4/index.html" },
-      { title: "ducklife5", platform: "Windows", genre: "RPG", path: "games/ducklife5/index.html" },
-      { title: "earntodie", platform: "Linux", genre: "Action", path: "games/earntodie/index.html" },
-      { title: "edgenotfound", platform: "Windows", genre: "Puzzle", path: "games/edgenotfound/index.html" },
-      { title: "eggycar", platform: "Linux", genre: "Action", path: "games/eggycar/index.html" },
-      { title: "evilglitch", platform: "Windows", genre: "Horror", path: "games/evilglitch/index.html" },
-      { title: "factoryballsforever", platform: "Linux", genre: "Puzzle", path: "games/factoryballsforever/index.html" },
-      { title: "fireboyandwatergirlforesttemple", platform: "Windows", genre: "Puzzle", path: "games/fireboyandwatergirlforesttemple/index.html" },
-      { title: "flappy2048", platform: "Linux", genre: "Puzzle", path: "games/flappy2048/index.html" },
-      { title: "flappybird", platform: "Windows", genre: "Action", path: "games/flappybird/index.html" },
-      { title: "flappyplane", platform: "Linux", genre: "Action", path: "games/flappyplane/index.html" },
-      { title: "flightsimulator", platform: "Windows", genre: "Action", path: "games/flightsimulator/index.html" },
-      { title: "fridaynightfunkin", platform: "Linux", genre: "Action", path: "games/fridaynightfunkin/index.html" },
-      { title: "friendlyfire", platform: "Windows", genre: "Action", path: "games/friendlyfire/index.html" },
-      { title: "fruitninja", platform: "Linux", genre: "Action", path: "games/fruitninja/index.html" },
-      { title: "geometrydash", platform: "Windows", genre: "Action", path: "games/geometrydash/index.html" },
-      { title: "getawayshootoutnew", platform: "Linux", genre: "Action", path: "games/getawayshootoutnew/index.html" },
-      { title: "gladihoppers", platform: "Windows", genre: "Action", path: "games/gladihoppers/index.html" },
-      { title: "googlesnake", platform: "Linux", genre: "Puzzle", path: "games/googlesnake/index.html" },
-      { title: "gopherkart", platform: "Windows", genre: "Action", path: "games/gopherkart/index.html" },
-      { title: "grindcraft", platform: "Linux", genre: "RPG", path: "games/grindcraft/index.html" },
-      { title: "hexql", platform: "Windows", genre: "Action", path: "games/hexql/index.html" },
-      { title: "hextris", platform: "Linux", genre: "Puzzle", path: "games/hextris/index.html" },
-      { title: "highwaytraffic", platform: "Windows", genre: "Action", path: "games/highwaytraffic/index.html" },
-      { title: "konnekt", platform: "Linux", genre: "Puzzle", path: "games/konnekt/index.html" },
-      { title: "learntofly", platform: "Windows", genre: "Action", path: "games/learntofly/index.html" },
-      { title: "letssurf", platform: "Linux", genre: "Action", path: "games/letssurf/index.html" },
-      { title: "littlealchemy", platform: "Windows", genre: "Puzzle", path: "games/littlealchemy/index.html" },
-      { title: "mergeroundracers", platform: "Linux", genre: "Action", path: "games/mergeroundracers/index.html" },
-      { title: "monkeymart", platform: "Windows", genre: "RPG", path: "games/monkeymart/index.html" },
-      { title: "motoroadrash3d", platform: "Linux", genre: "Action", path: "games/motoroadrash3d/index.html" },
-      { title: "motox3m", platform: "Windows", genre: "Action", path: "games/motox3m/index.html" },
-      { title: "ninjavsevilcorp", platform: "Linux", genre: "Action", path: "games/ninjavsevilcorp/index.html" },
-      { title: "omnombo", platform: "Windows", genre: "Action", path: "games/omnombo/index.html" },
-      { title: "ovo", platform: "Linux", genre: "Action", path: "games/ovo/index.html" },
-      { title: "ovo2", platform: "Windows", genre: "Action", path: "games/ovo2/index.html" },
-      { title: "packabunchas", platform: "Linux", genre: "Puzzle", path: "games/packabunchas/index.html" },
-      { title: "pacman", platform: "Windows", genre: "Action", path: "games/pacman/index.html" },
-      { title: "paperio", platform: "Linux", genre: "Action", path: "games/paperio/index.html" },
-      { title: "particleclicker", platform: "Windows", genre: "Action", path: "games/particleclicker/index.html" },
-      { title: "pushback", platform: "Linux", genre: "Action", path: "games/pushback/index.html" },
-      { title: "q1k3", platform: "Windows", genre: "Action", path: "games/q1k3/index.html" },
-      { title: "racer", platform: "Linux", genre: "Action", path: "games/racer/index.html" },
-      { title: "radiusraid", platform: "Windows", genre: "Action", path: "games/radiusraid/index.html" },
-      { title: "redball4", platform: "Linux", genre: "Action", path: "games/redball4/index.html" },
-      { title: "retrobowl", platform: "Windows", genre: "Action", path: "games/retrobowl/index.html" },
-      { title: "retrohaunt", platform: "Linux", genre: "Horror", path: "games/retrohaunt/index.html" },
-      { title: "riddleschool2", platform: "Windows", genre: "Puzzle", path: "games/riddleschool2/index.html" },
-      { title: "ritz", platform: "Linux", genre: "Puzzle", path: "games/ritz/index.html" },
-      { title: "roadblocks", platform: "Windows", genre: "Action", path: "games/roadblocks/index.html" },
-      { title: "run3", platform: "Linux", genre: "Action", path: "games/run3/index.html" },
-      { title: "scrapmetal3", platform: "Windows", genre: "Action", path: "games/scrapmetal3/index.html" },
-      { title: "shuttledeck", platform: "Linux", genre: "Puzzle", path: "games/shuttledeck/index.html" },
-      { title: "sketchbook04", platform: "Windows", genre: "Puzzle", path: "games/sketchbook04/index.html" },
-      { title: "sleepingbeauty", platform: "Linux", genre: "RPG", path: "games/sleepingbeauty/index.html" },
-      { title: "slitherio", platform: "Windows", genre: "Action", path: "games/slitherio/index.html" },
-      { title: "slope", platform: "Linux", genre: "Action", path: "games/slope/index.html" },
-      { title: "slope2", platform: "Windows", genre: "Action", path: "games/slope2/index.html" },
-      { title: "snake", platform: "Linux", genre: "Puzzle", path: "games/snake/index.html" },
-      { title: "snowbattle", platform: "Windows", genre: "Action", path: "games/snowbattle/index.html" },
-      { title: "soccerrandom", platform: "Linux", genre: "Action", path: "games/soccerrandom/index.html" },
-      { title: "solitaire", platform: "Windows", genre: "Puzzle", path: "games/solitaire/index.html" },
-      { title: "spacecompany", platform: "Linux", genre: "RPG", path: "games/spacecompany/index.html" },
-      { title: "spacegarden", platform: "Windows", genre: "RPG", path: "games/spacegarden/index.html" },
-      { title: "spacehuggers", platform: "Linux", genre: "Action", path: "games/spacehuggers/index.html" },
-      { title: "spaceinvaders", platform: "Windows", genre: "Action", path: "games/spaceinvaders/index.html" },
-      { title: "stack", platform: "Linux", genre: "Puzzle", path: "games/stack/index.html" },
-      { title: "stackball", platform: "Windows", genre: "Action", path: "games/stackball/index.html" },
-      { title: "stickmanboost", platform: "Linux", genre: "Action", path: "games/stickmanboost/index.html" },
-      { title: "stickmanclimb", platform: "Windows", genre: "Action", path: "games/stickmanclimb/index.html" },
-      { title: "stickmangolf", platform: "Linux", genre: "Action", path: "games/stickmangolf/index.html" },
-      { title: "stickmanhook", platform: "Windows", genre: "Action", path: "games/stickmanhook/index.html" },
-      { title: "stickmansurvival", platform: "Linux", genre: "Action", path: "games/stickmansurvival/index.html" },
-      { title: "subwaysurfers", platform: "Windows", genre: "Action", path: "games/subwaysurfers/index.html" },
-      { title: "subwaysurfersny", platform: "Linux", genre: "Action", path: "games/subwaysurfersny/index.html" },
-      { title: "subwaysurferssingapore", platform: "Windows", genre: "Action", path: "games/subwaysurferssingapore/index.html" },
-      { title: "tanukisunset", platform: "Linux", genre: "Action", path: "games/tanukisunset/index.html" },
-      { title: "tetris", platform: "Windows", genre: "Puzzle", path: "games/tetris/index.html" },
-      { title: "themazeofspacegoblins", platform: "Linux", genre: "Action", path: "games/themazeofspacegoblins/index.html" },
-      { title: "timeshooter", platform: "Windows", genre: "Action", path: "games/timeshooter/index.html" },
-      { title: "timeshooter2", platform: "Linux", genre: "Action", path: "games/timeshooter2/index.html" },
-      { title: "timeshooter3", platform: "Windows", genre: "Action", path: "games/timeshooter3/index.html" },
-      { title: "tinyfishing", platform: "Linux", genre: "RPG", path: "games/tinyfishing/index.html" },
-      { title: "tombofthmask", platform: "Windows", genre: "Action", path: "games/tombofthmask/index.html" },
-      { title: "topspeedracing3d", platform: "Linux", genre: "Action", path: "games/topspeedracing3d/index.html" },
-      { title: "towermaster", platform: "Windows", genre: "Puzzle", path: "games/towermaster/index.html" },
-      { title: "trimps", platform: "Linux", genre: "RPG", path: "games/trimps/index.html" },
-      { title: "tunnelrush", platform: "Windows", genre: "Action", path: "games/tunnelrush/index.html" },
-      { title: "vex4", platform: "Linux", genre: "Action", path: "games/vex4/index.html" },
-      { title: "vex5", platform: "Windows", genre: "Action", path: "games/vex5/index.html" },
-      { title: "vex6", platform: "Linux", genre: "Action", path: "games/vex6/index.html" },
-      { title: "webecomewhatwebehold", platform: "Windows", genre: "Puzzle", path: "games/webecomewhatwebehold/index.html" },
-      { title: "worldshardestgame2", platform: "Linux", genre: "Puzzle", path: "games/worldshardestgame2/index.html" },
-      { title: "xx142b2exe", platform: "Windows", genre: "Action", path: "games/xx142b2exe/index.html" },
-      { title: "zombsroyale", platform: "Linux", genre: "Action", path: "games/zombsroyale/index.html" }
-    ];
+    // Split Header into Letters for Animation
+    const title = document.getElementById('title');
+    const text = title.textContent;
+    title.innerHTML = '';
+    text.split('').forEach((char, index) => {
+      const span = document.createElement('span');
+      span.className = 'letter';
+      span.textContent = char;
+      span.style.setProperty('--index', index);
+      title.appendChild(span);
+    });
 
+    // Game data
+    const games=[{title:"2048",platform:"Windows",genre:"Puzzle",path:"games/2048/index.html"},{title:"adarkroom",platform:"Windows",genre:"Horror",path:"games/adarkroom/index.html"},{title:"asciispace",platform:"Linux",genre:"Action",path:"games/asciispace/index.html"},{title:"asteroids",platform:"Linux",genre:"Action",path:"games/asteroids/index.html"},{title:"astray",platform:"Windows",genre:"Horror",path:"games/astray/index.html"},{title:"backcountry",platform:"Linux",genre:"RPG",path:"games/backcountry/index.html"},{title:"baldisbasics",platform:"Windows",genre:"Horror",path:"games/baldisbasics/index.html"},{title:"basketballlegends",platform:"Windows",genre:"Action",path:"games/basketballlegends/index.html"},{title:"basketballstars",platform:"Windows",genre:"Action",path:"games/basketballstars/index.html"},{title:"basketbrosio",platform:"Linux",genre:"Action",path:"games/basketbrosio/index.html"},{title:"basketrandom",platform:"Windows",genre:"Action",path:"games/basketrandom/index.html"},{title:"bitlife",platform:"Linux",genre:"RPG",path:"games/bitlife/index.html"},{title:"blackholesquare",platform:"Windows",genre:"Puzzle",path:"games/blackholesquare/index.html"},{title:"bounceback",platform:"Linux",genre:"Action",path:"games/bounceback/index.html"},{title:"breakout",platform:"Linux",genre:"Action",path:"games/breakout/index.html"},{title:"btd4",platform:"Windows",genre:"Action",path:"games/btd4/index.html"},{title:"captaincallisto",platform:"Linux",genre:"Action",path:"games/captaincallisto/index.html"},{title:"chess",platform:"Windows",genre:"Puzzle",path:"games/chess/index.html"},{title:"chromanichord",platform:"Linux",genre:"Puzzle",path:"games/chromanichord/index.html"},{title:"chromedino",platform:"Windows",genre:"Action",path:"games/chromedino/index.html"},{title:"clickerheroes",platform:"Linux",genre:"RPG",path:"games/clickerheroes/index.html"},{title:"clusterush",platform:"Windows",genre:"Action",path:"games/clusterush/index.html"},{title:"connect3",platform:"Linux",genre:"Puzzle",path:"games/connect3/index.html"},{title:"cookieclicker",platform:"Windows",genre:"Action",path:"games/cookieclicker/index.html"},{title:"crossyroad",platform:"Linux",genre:"Action",path:"games/crossyroad/index.html"},{title:"csgoclicker",platform:"Windows",genre:"Action",path:"games/csgoclicker/index.html"},{title:"cubefield",platform:"Linux",genre:"Action",path:"games/cubefield/index.html"},{title:"cubitomayhem",platform:"Windows",genre:"Action",path:"games/cubitomayhem/index.html"},{title:"cuttherope",platform:"Linux",genre:"Puzzle",path:"games/cuttherope/index.html"},{title:"cuttheropeholiday",platform:"Windows",genre:"Puzzle",path:"games/cuttheropeholiday/index.html"},{title:"cuttheropetimetravel",platform:"Linux",genre:"Puzzle",path:"games/cuttheropetimetravel/index.html"},{title:"deathrun3d",platform:"Windows",genre:"Action",path:"games/deathrun3d/index.html"},{title:"deepestsword",platform:"Linux",genre:"Action",path:"games/deepestsword/index.html"},{title:"doodlejump",platform:"Windows",genre:"Action",path:"games/doodlejump/index.html"},{title:"doom",platform:"Linux",genre:"Action",path:"games/doom/index.html"},{title:"drawthehill",platform:"Windows",genre:"Puzzle",path:"games/drawthehill/index.html"},{title:"drivemad",platform:"Linux",genre:"Action",path:"games/drivemad/index.html"},{title:"ducklife",platform:"Windows",genre:"RPG",path:"games/ducklife/index.html"},{title:"ducklife2",platform:"Linux",genre:"RPG",path:"games/ducklife2/index.html"},{title:"ducklife3",platform:"Windows",genre:"RPG",path:"games/ducklife3/index.html"},{title:"ducklife4",platform:"Linux",genre:"RPG",path:"games/ducklife4/index.html"},{title:"ducklife5",platform:"Windows",genre:"RPG",path:"games/ducklife5/index.html"},{title:"earntodie",platform:"Linux",genre:"Action",path:"games/earntodie/index.html"},{title:"edgenotfound",platform:"Windows",genre:"Puzzle",path:"games/edgenotfound/index.html"},{title:"eggycar",platform:"Linux",genre:"Action",path:"games/eggycar/index.html"},{title:"evilglitch",platform:"Windows",genre:"Horror",path:"games/evilglitch/index.html"},{title:"factoryballsforever",platform:"Linux",genre:"Puzzle",path:"games/factoryballsforever/index.html"},{title:"fireboyandwatergirlforesttemple",platform:"Windows",genre:"Puzzle",path:"games/fireboyandwatergirlforesttemple/index.html"},{title:"flappy2048",platform:"Linux",genre:"Puzzle",path:"games/flappy2048/index.html"},{title:"flappybird",platform:"Windows",genre:"Action",path:"games/flappybird/index.html"},{title:"flappyplane",platform:"Linux",genre:"Action",path:"games/flappyplane/index.html"},{title:"flightsimulator",platform:"Windows",genre:"Action",path:"games/flightsimulator/index.html"},{title:"fridaynightfunkin",platform:"Linux",genre:"Action",path:"games/fridaynightfunkin/index.html"},{title:"friendlyfire",platform:"Windows",genre:"Action",path:"games/friendlyfire/index.html"},{title:"fruitninja",platform:"Linux",genre:"Action",path:"games/fruitninja/index.html"},{title:"geometrydash",platform:"Windows",genre:"Action",path:"games/geometrydash/index.html"},{title:"gladihoppers",platform:"Windows",genre:"Action",path:"games/gladihoppers/index.html"},{title:"googlesnake",platform:"Linux",genre:"Puzzle",path:"games/googlesnake/index.html"},{title:"gopherkart",platform:"Windows",genre:"Action",path:"games/gopherkart/index.html"},{title:"grindcraft",platform:"Linux",genre:"RPG",path:"games/grindcraft/index.html"},{title:"hexql",platform:"Windows",genre:"Action",path:"games/hexql/index.html"},{title:"hextris",platform:"Linux",genre:"Puzzle",path:"games/hextris/index.html"},{title:"highwaytraffic",platform:"Windows",genre:"Action",path:"games/highwaytraffic/index.html"},{title:"konnekt",platform:"Linux",genre:"Puzzle",path:"games/konnekt/index.html"},{title:"learntofly",platform:"Windows",genre:"Action",path:"games/2/learntofly/index.html"},{title:"letssurf",platform:"Linux",genre:"Action",path:"games/letssurf/index.html"},{title:"littlealchemy",platform:"Windows",genre:"Puzzle",path:"games/littlealchemy/index.html"},{title:"mergeroundracers",platform:"Linux",genre:"Action",path:"games/mergeroundracers/index.html"},{title:"monkeymart",platform:"Windows",genre:"RPG",path:"games/monkeymart/index.html"},{title:"motoroadrash3d",platform:"Linux",genre:"Action",path:"games/motoroadrash3d/index.html"},{title:"motox3m",platform:"Windows",genre:"Action",path:"games/motox3m/index.html"},{title:"ninjavsevilcorp",platform:"Linux",genre:"Action",path:"games/ninjavsevilcorp/index.html"},{title:"omnombo",platform:"Windows",genre:"Action",path:"games/omnombo/index.html"},{title:"packabunchas",platform:"Linux",genre:"Puzzle",path:"games/packabunchas/index.html"},{title:"pacman",platform:"Windows",genre:"Action",path:"games/pacman/index.html"},{title:"paperio",platform:"Linux",genre:"Action",path:"games/paperio/index.html"},{title:"particleclicker",platform:"Windows",genre:"Action",path:"games/particleclicker/index.html"},{title:"pushback",platform:"Linux",genre:"Action",path:"games/pushback/index.html"},{title:"q1k3",platform:"Windows",genre:"Action",path:"games/q1k3/index.html"},{title:"racer",platform:"Linux",genre:"Action",path:"games/racer/index.html"},{title:"radiusraid",platform:"Windows",genre:"Action",path:"games/radiusraid/index.html"},{title:"redball4",platform:"Linux",genre:"Action",path:"games/redball4/index.html"},{title:"retrobowl",platform:"Windows",genre:"Action",path:"games/retrobowl/index.html"},{title:"retrohaunt",platform:"Linux",genre:"Horror",path:"games/retrohaunt/index.html"},{title:"riddleschool2",platform:"Windows",genre:"Puzzle",path:"games/riddleschool2/index.html"},{title:"ritz",platform:"Linux",genre:"Puzzle",path:"games/ritz/index.html"},{title:"roadblocks",platform:"Windows",genre:"Action",path:"games/roadblocks/index.html"},{title:"scrapmetal3",platform:"Windows",genre:"Action",path:"games/scrapmetal3/index.html"},{title:"shuttledeck",platform:"Linux",genre:"Puzzle",path:"games/shuttledeck/index.html"},{title:"sketchbook04",platform:"Windows",genre:"Puzzle",path:"games/sketchbook04/index.html"},{title:"sleepingbeauty",platform:"Linux",genre:"RPG",path:"games/sleepingbeauty/index.html"},{title:"slope",platform:"Linux",genre:"Action",path:"games/slope/index.html"},{title:"slope2",platform:"Windows",genre:"Action",path:"games/slope2/index.html"},{title:"snake",platform:"Linux",genre:"Puzzle",path:"games/snake/index.html"},{title:"snowbattle",platform:"Windows",genre:"Action",path:"games/snowbattle/index.html"},{title:"solitaire",platform:"Windows",genre:"Puzzle",path:"games/solitaire/index.html"},{title:"spacecompany",platform:"Linux",genre:"RPG",path:"games/spacecompany/index.html"},{title:"spacegarden",platform:"Windows",genre:"RPG",path:"games/spacegarden/index.html"},{title:"spacehuggers",platform:"Linux",genre:"Action",path:"games/spacehuggers/index.html"},{title:"spaceinvaders",platform:"Windows",genre:"Action",path:"games/spaceinvaders/index.html"},{title:"stack",platform:"Linux",genre:"Puzzle",path:"games/stack/index.html"},{title:"stackball",platform:"Windows",genre:"Action",path:"games/stackball/index.html"},{title:"stickmanhook",platform:"Windows",genre:"Action",path:"games/stickmanhook/index.html"},{title:"stickmansurvival",platform:"Linux",genre:"Action",path:"games/stickmansurvival/index.html"},{title:"subwaysurfersny",platform:"Linux",genre:"Action",path:"games/subwaysurfersny/index.html"},{title:"subwaysurferssingapore",platform:"Windows",genre:"Action",path:"games/subwaysurferssingapore/index.html"},{title:"tanukisunset",platform:"Linux",genre:"Action",path:"games/tanukisunset/index.html"},{title:"tetris",platform:"Windows",genre:"Puzzle",path:"games/tetris/index.html"},{title:"themazeofspacegoblins",platform:"Linux",genre:"Action",path:"games/themazeofspacegoblins/index.html"},{title:"tinyfishing",platform:"Linux",genre:"RPG",path:"games/tinyfishing/index.html"},{title:"tombofthmask",platform:"Windows",genre:"Action",path:"games/tombofthmask/index.html"},{title:"topspeedracing3d",platform:"Linux",genre:"Action",path:"games/topspeedracing3d/index.html"},{title:"towermaster",platform:"Windows",genre:"Puzzle",path:"games/towermaster/index.html"},{title:"trimps",platform:"Linux",genre:"RPG",path:"games/trimps/index.html"},{title:"tunnelrush",platform:"Windows",genre:"Action",path:"games/tunnelrush/index.html"},{title:"vex4",platform:"Linux",genre:"Action",path:"games/vex4/index.html"},{title:"vex5",platform:"Windows",genre:"Action",path:"games/vex5/index.html"},{title:"vex6",platform:"Linux",genre:"Action",path:"games/vex6/index.html"},{title:"webecomewhatwebehold",platform:"Windows",genre:"Puzzle",path:"games/webecomewhatwebehold/index.html"},{title:"worldshardestgame2",platform:"Linux",genre:"Puzzle",path:"games/worldshardestgame2/index.html"},{title:"xx142b2exe",platform:"Windows",genre:"Action",path:"games/xx142b2exe/index.html"},{title:"zombsroyale",platform:"Linux",genre:"Action",path:"games/zombsroyale/index.html"}];
     let currentPage = 1;
     const gamesPerPage = 16;
     let filteredGames = [...games];
@@ -620,6 +763,7 @@
       if (currentPage > 1) {
         currentPage--;
         renderGames();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
 
@@ -628,6 +772,7 @@
       if (currentPage < totalPages) {
         currentPage++;
         renderGames();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
 
@@ -653,39 +798,39 @@
       }
     });
 
-    // Purple Shooting Stars Animation with optimization
+    // Shooting Stars Animation
     const starsContainer = document.querySelector('.stars');
-    const maxStars = 50; // Limit the number of stars
-    let starCount = 0;
-
     function createStar() {
-      if (starCount >= maxStars) return;
-
       const star = document.createElement('div');
       star.className = 'star';
       const x = Math.random() * 100;
-      const duration = Math.random() * 1.5 + 1;
       star.style.left = `${x}%`;
       star.style.top = `${Math.random() * 100}%`;
-      star.style.animation = `shoot ${duration}s linear forwards`;
       starsContainer.appendChild(star);
-      starCount++;
-
-      setTimeout(() => {
-        star.remove();
-        starCount--;
-      }, duration * 1000);
+      setTimeout(() => star.remove(), 3000);
     }
 
-    const styleSheet = document.styleSheets[0];
-    styleSheet.insertRule(`
-      @keyframes shoot {
-        0% { transform: translateX(0) translateY(0); opacity: 1; }
-        100% { transform: translateX(-100vw) translateY(100vh); opacity: 0; }
-      }
-    `, styleSheet.cssRules.length);
+    let particleInterval = null;
+    function startParticles() {
+      if (particleInterval) clearInterval(particleInterval);
+      particleInterval = setInterval(createStar, 100);
+    }
 
-    setInterval(createStar, 300); // Reduced frequency for better performance
+    function stopParticles() {
+      if (particleInterval) clearInterval(particleInterval);
+    }
+
+    // Start animations
+    startParticles();
+
+    // Handle visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        startParticles();
+      } else {
+        stopParticles();
+      }
+    });
 
     // Initial render
     renderGames();
