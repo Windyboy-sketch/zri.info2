@@ -1,9 +1,9 @@
-// manifest.json
+
 {
   "name": "zri.info",
   "short_name": "zri",
   "description": "a cool website for bypassing networks",
-  "start_url": "/",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3367D6",
@@ -12,13 +12,13 @@
     {
       "src": "ICON.jpg",
       "sizes": "192x192",
-      "type": "image/jpeg",  
+      "type": "image/jpg",  
       "purpose": "any maskable"
     },
     {
       "src": "ICON.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg",  
+      "type": "image/jpg",  
       "purpose": "any maskable"
     }
   ]
