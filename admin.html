@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - zri.info</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .admin-container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 2px solid rgba(162, 89, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            animation: borderGlow 5s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0% { border-color: rgba(162, 89, 255, 0.3); }
+            50% { border-color: rgba(255, 119, 255, 0.5); }
+            100% { border-color: rgba(162, 89, 255, 0.3); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #a259ff;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+        }
+
+        .locked-message {
+            text-align: center;
+            color: #d0d0d0;
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.active {
+            display: block;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: rgba(50, 50, 50, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .user-table th, .user-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(162, 89, 255, 0.2);
+        }
+
+        .user-table th {
+            background: rgba(162, 89, 255, 0.3);
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .user-table td {
+            color: #d0d0d0;
+        }
+
+        .user-table button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, #a259ff 0%, #c084fc 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 10px rgba(162, 89, 255, 0.4);
+        }
+
+        .user-table button:hover {
+            background: linear-gradient(135deg, #c084fc 0%, #a259ff 100%);
+            transform: scale(1.05);
+            box-shadow: 0 2px 15px rgba(162, 89, 255, 0.6);
+        }
+
+        .user-table .banned {
+            color: #ff6666;
+        }
+
+        .logout-button {
+            margin-top: 2rem;
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #a259ff 0%, #c084fc 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 10px rgba(162, 89, 255, 0.4);
+        }
+
+        .logout-button:hover {
+            background: linear-gradient(135deg, #c084fc 0%, #a259ff 100%);
+            transform: scale(1.05);
+            box-shadow: 0 2px 15px rgba(162, 89, 255, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .user-table th, .user-table td {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+            }
+            .user-table button {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            .locked-message {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <h1>Admin Panel</h1>
+        <div class="locked-message" id="lockedMessage">
+            Access restricted. Execute the designated command in the console.
+        </div>
+        <div class="admin-content" id="adminContent">
+            <h2>Online Users</h2>
+            <table class="user-table" id="userTable">
+                <thead>
+                    <tr>
+                        <th>Device ID</th>
+                        <th>Status</th>
+                        <th>Last Active</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        // Simple UUID generator for device IDs
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Set or get device ID via cookie
+        function getDeviceId() {
+            const name = 'deviceId=';
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const cookieArray = decodedCookie.split(';');
+            for (let cookie of cookieArray) {
+                cookie = cookie.trim();
+                if (cookie.indexOf(name) === 0) {
+                    return cookie.substring(name.length, cookie.length);
+                }
+            }
+            const newId = generateUUID();
+            document.cookie = `deviceId=${newId};path=/;max-age=31536000`; // 1 year expiry
+            return newId;
+        }
+
+        // Simulated backend storage with localStorage
+        function getUsers() {
+            try {
+                const users = localStorage.getItem('users');
+                return users ? JSON.parse(users) : {};
+            } catch (error) {
+                console.error('Error loading users:', error);
+                return {};
+            }
+        }
+
+        function saveUsers(users) {
+            try {
+                localStorage.setItem('users', JSON.stringify(users));
+            } catch (error) {
+                console.error('Error saving users:', error);
+            }
+        }
+
+        // Update user activity
+        function updateUserActivity() {
+            const deviceId = getDeviceId();
+            const users = getUsers();
+            users[deviceId] = {
+                lastActive: new Date().toISOString(),
+                banned: users[deviceId]?.banned || false
+            };
+            saveUsers(users);
+
+            // Notify server of activity (simulated)
+            console.log(`User ${deviceId} is active`);
+        }
+
+        // Check if user is banned
+        function isBanned() {
+            const deviceId = getDeviceId();
+            const users = getUsers();
+            return users[deviceId]?.banned || false;
+        }
+
+        // Admin access via console command
+        const ADMIN_KEY = 'zri:admin:access:2025';
+        window.zriAdminAccess = function(key) {
+            console.log('Debug: Function called with key:', key);
+            console.log('Debug: Expected key:', ADMIN_KEY);
+            console.log('Debug: lockedMessage element:', document.getElementById('lockedMessage'));
+            console.log('Debug: adminContent element:', document.getElementById('adminContent'));
+            if (key === ADMIN_KEY) {
+                console.log('Debug: Key matched, attempting to unlock');
+                const lockedMessage = document.getElementById('lockedMessage');
+                const adminContent = document.getElementById('adminContent');
+                if (lockedMessage && adminContent) {
+                    lockedMessage.style.display = 'none';
+                    adminContent.classList.add('active');
+                    renderUsers();
+                    console.log('Access granted. Admin panel unlocked.');
+                } else {
+                    console.error('Error: DOM elements not found');
+                }
+            } else {
+                console.error('Invalid command. Access denied.');
+            }
+        };
+
+        function logout() {
+            document.getElementById('lockedMessage').style.display = 'block';
+            document.getElementById('adminContent').classList.remove('active');
+            document.getElementById('userTableBody').innerHTML = '';
+        }
+
+        // Render online users
+        function renderUsers() {
+            const userTableBody = document.getElementById('userTableBody');
+            const users = getUsers();
+            userTableBody.innerHTML = '';
+
+            // Consider users active within the last 5 minutes as online
+            const now = new Date();
+            const onlineThreshold = 5 * 60 * 1000; // 5 minutes in ms
+
+            for (const [deviceId, data] of Object.entries(users)) {
+                const lastActive = new Date(data.lastActive);
+                const isOnline = (now - lastActive) < onlineThreshold;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${deviceId}</td>
+                    <td class="${data.banned ? 'banned' : ''}">${isOnline ? 'Online' : 'Offline'}${data.banned ? ' (Banned)' : ''}</td>
+                    <td>${lastActive.toLocaleString()}</td>
+                    <td>
+                        <button onclick="toggleBan('${deviceId}', this)">
+                            ${data.banned ? 'Unban' : 'Ban'}
+                        </button>
+                    </td>
+                `;
+                userTableBody.appendChild(row);
+            }
+        }
+
+        // Toggle ban status
+        function toggleBan(deviceId, button) {
+            const users = getUsers();
+            if (users[deviceId]) {
+                users[deviceId].banned = !users[deviceId].banned;
+                saveUsers(users);
+                button.textContent = users[deviceId].banned ? 'Unban' : 'Ban';
+                renderUsers();
+            }
+        }
+
+        // Periodically update user activity
+        updateUserActivity();
+        setInterval(updateUserActivity, 30000); // Update every 30 seconds
+
+        // Periodically refresh user list if admin panel is active
+        setInterval(() => {
+            if (document.getElementById('adminContent').classList.contains('active')) {
+                renderUsers();
+            }
+        }, 10000); // Refresh every 10 seconds
+
+        // Check if user is banned on page load
+        if (isBanned()) {
+            document.body.innerHTML = '<h1 style="color: #ff6666; text-align: center; margin-top: 20%;">You have been banned from zri.info</h1>';
+        }
+    </script>
+</body>
+</html>
