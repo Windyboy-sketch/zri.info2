@@ -54,6 +54,7 @@ function isBanned() {
     return users[deviceId]?.banned || false;
 }
 
+// Enforce ban on page load
 if (isBanned()) {
     document.body.innerHTML = '<h1 style="color: #ff6666; text-align: center; margin-top: 20%;">You have been banned from zri.info</h1>';
 } else {
