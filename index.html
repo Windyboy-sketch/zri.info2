@@ -178,7 +178,7 @@
         .wave:nth-child(3) {
             animation: waveMove 12s ease-in-out infinite, waveFloat 4s ease-in-out infinite;
             opacity: 0.4;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http:svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(80, 30, 150, 0.6)" fill-opacity="1" d="M0,192C48,176,96,160,144,160C192,160,240,176,288,192C336,208,384,224,432,224C480,224,528,208,576,192C624,176,672,160,720,160C768,160,816,176,864,192C912,208,960,224,1008,224C1056,224,1104,208,1152,192C1200,176,1248,160,1296,160C1344,160,1392,176,1440,192L1440,320L0,320Z"></path></svg>') repeat-x;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(80, 30, 150, 0.6)" fill-opacity="1" d="M0,192C48,176,96,160,144,160C192,160,240,176,288,192C336,208,384,224,432,224C480,224,528,208,576,192C624,176,672,160,720,160C768,160,816,176,864,192C912,208,960,224,1008,224C1056,224,1104,208,1152,192C1200,176,1248,160,1296,160C1344,160,1392,176,1440,192L1440,320L0,320Z"></path></svg>') repeat-x;
             filter: drop-shadow(0 -2px 4px rgba(80, 30, 150, 0.3));
         }
 
@@ -493,6 +493,12 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             measurementId: "G-2QF2NTJXCN"
         };
 
+        // Check if Firebase scripts are loaded
+        if (typeof firebase === 'undefined') {
+            console.error('Firebase SDK not loaded. Check network or ad blocker.');
+            document.getElementById('usernameError').textContent = 'Failed to load Firebase. Check your network or disable ad blocker.';
+        }
+
         // Initialize Firebase
         let app, auth, db;
         try {
@@ -502,7 +508,8 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             console.log('Firebase initialized successfully');
         } catch (error) {
             console.error('Firebase initialization failed:', error);
-            document.getElementById('usernameError').textContent = 'Failed to connect to server. Please try again later.';
+            document.getElementById('usernameError').textContent = 'Failed to connect to server: ' + error.message;
+            return;
         }
 
         // Elements
@@ -514,14 +521,25 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
         const banMessage = document.getElementById('banMessage');
         const banMessageText = document.getElementById('banMessageText');
 
+        // Utility function to add timeout to promises
+        function withTimeout(promise, timeoutMs) {
+            const timeout = new Promise((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error('Operation timed out after ' + timeoutMs + 'ms'));
+                }, timeoutMs);
+            });
+            return Promise.race([promise, timeout]);
+        }
+
         // Sign in anonymously on page load
-        if (auth) {
-            auth.onAuthStateChanged((user) => {
-                console.log('Auth state changed, user:', user);
-                if (user) {
-                    // User is signed in, check their ban status
-                    const userDocRef = db.collection('users').doc(user.uid);
-                    userDocRef.get().then((doc) => {
+        auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed, user:', user);
+            if (user) {
+                console.log('User signed in, UID:', user.uid);
+                // User is signed in, check their ban status
+                const userDocRef = db.collection('users').doc(user.uid);
+                withTimeout(userDocRef.get(), 10000)
+                    .then((doc) => {
                         if (doc.exists) {
                             const userData = doc.data();
                             console.log('User data retrieved:', userData);
@@ -544,22 +562,24 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                             usernamePrompt.style.display = 'flex';
                             mainContent.style.display = 'none';
                         }
-                    }).catch((error) => {
+                    })
+                    .catch((error) => {
                         console.error('Error checking user data:', error);
-                        usernameError.textContent = 'Error loading user data. Please try again.';
+                        usernameError.textContent = 'Error loading user data: ' + error.message;
                     });
-                } else {
-                    // No user signed in, sign in anonymously
-                    console.log('No user signed in, attempting anonymous sign-in');
-                    auth.signInAnonymously().then(() => {
+            } else {
+                // No user signed in, sign in anonymously
+                console.log('No user signed in, attempting anonymous sign-in');
+                withTimeout(auth.signInAnonymously(), 10000)
+                    .then(() => {
                         console.log('Anonymous sign-in successful');
-                    }).catch((error) => {
-                        console.error('Error signing in anonymously:', error);
+                    })
+                    .catch((error) => {
+                        console.error('Error signing in anonymously on page load:', error);
                         usernameError.textContent = 'Error signing in: ' + error.message;
                     });
-                }
-            });
-        }
+            }
+        });
 
         // Register username and save to Firestore
         async function registerUsername() {
@@ -570,22 +590,6 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
 
             const username = usernameInput.value.trim();
             let user = auth.currentUser;
-
-            // Ensure user is signed in
-            if (!user) {
-                console.log('No user signed in, attempting to sign in anonymously');
-                try {
-                    const userCredential = await auth.signInAnonymously();
-                    user = userCredential.user;
-                    console.log('Anonymous sign-in successful in registerUsername, UID:', user.uid);
-                } catch (error) {
-                    console.error('Error signing in anonymously in registerUsername:', error);
-                    usernameError.textContent = 'Error signing in: ' + error.message;
-                    joinButton.disabled = false;
-                    joinButton.textContent = 'Join';
-                    return;
-                }
-            }
 
             // Validate username
             if (!username) {
@@ -612,15 +616,33 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                 return;
             }
 
+            // Ensure user is signed in
+            console.log('Checking if user is signed in, currentUser:', user);
+            if (!user) {
+                console.log('No user signed in, attempting to sign in anonymously');
+                try {
+                    const userCredential = await withTimeout(auth.signInAnonymously(), 10000);
+                    user = userCredential.user;
+                    console.log('Anonymous sign-in successful in registerUsername, UID:', user.uid);
+                } catch (error) {
+                    console.error('Error signing in anonymously in registerUsername:', error);
+                    usernameError.textContent = 'Error signing in: ' + error.message + '. Check your network or Firebase settings.';
+                    joinButton.disabled = false;
+                    joinButton.textContent = 'Join';
+                    return;
+                }
+            }
+
             if (user) {
-                console.log('User is signed in, UID:', user.uid);
+                console.log('User is signed in, proceeding with registration, UID:', user.uid);
                 const userDocRef = db.collection('users').doc(user.uid);
                 // Check if username is already taken
                 console.log('Checking if username is taken:', username);
                 try {
-                    const querySnapshot = await db.collection('users')
-                        .where('username', '==', username)
-                        .get();
+                    const querySnapshot = await withTimeout(
+                        db.collection('users').where('username', '==', username).get(),
+                        10000
+                    );
                     console.log('Username query result, empty?', querySnapshot.empty);
                     if (!querySnapshot.empty) {
                         console.log('Username already taken');
@@ -630,21 +652,26 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                     } else {
                         // Save username and initial user data
                         console.log('Saving user data to Firestore');
-                        await userDocRef.set({
-                            username: username,
-                            banned: false,
-                            banMessage: '',
-                            lastActive: new Date().toISOString()
-                        });
+                        await withTimeout(
+                            userDocRef.set({
+                                username: username,
+                                banned: false,
+                                banMessage: '',
+                                lastActive: new Date().toISOString()
+                            }),
+                            10000
+                        );
                         console.log('User data saved successfully');
                         usernamePrompt.style.display = 'none';
                         mainContent.style.display = 'flex';
                         startAnimations();
                         updateUserActivity(user.uid);
+                        joinButton.disabled = false;
+                        joinButton.textContent = 'Join';
                     }
                 } catch (error) {
                     console.error('Error during username registration:', error);
-                    usernameError.textContent = 'Error: ' + error.message;
+                    usernameError.textContent = 'Error: ' + error.message + '. Check your network or Firebase settings.';
                     joinButton.disabled = false;
                     joinButton.textContent = 'Join';
                 }
