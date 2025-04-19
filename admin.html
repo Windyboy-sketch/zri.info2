@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - zri.info</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
     <style>
         * {
             margin: 0;
@@ -182,7 +178,7 @@
     <div class="admin-container">
         <h1>Admin Panel</h1>
         <div class="login-section" id="loginSection">
-            <input type="password" id.joipassword" placeholder="Enter admin password">
+            <input type="password" id="adminPassword" placeholder="Enter admin password">
             <div class="error-message" id="loginError"></div>
             <button onclick="login()">Login</button>
         </div>
@@ -204,27 +200,22 @@
     </div>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBEGM-Ij8BN8a0hL4bUoU4WEbBy8_gPlKM",
-            authDomain: "zriinfo-f83b7.firebaseapp.com",
-            projectId: "zriinfo-f83b7",
-            storageBucket: "zriinfo-f83b7.firebasestorage.app",
-            messagingSenderId: "582674719038",
-            appId: "1:582674719038:web:5d326ad45a757b6555cc6f",
-            measurementId: "G-2QF2NTJXCN"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         // Elements
         const loginSection = document.getElementById('loginSection');
         const adminContent = document.getElementById('adminContent');
         const userTableBody = document.getElementById('userTableBody');
         const adminPassword = document.getElementById('adminPassword');
         const loginError = document.getElementById('loginError');
+
+        // Local Storage Helper Functions
+        function getLocalStorageItem(key, defaultValue) {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : defaultValue;
+        }
+
+        function setLocalStorageItem(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
 
         // Password-based login
         const ADMIN_PASSWORD = 'stroodledingus'; // Hardcoded for simplicity; secure this in production
@@ -249,69 +240,56 @@
             userTableBody.innerHTML = '';
         }
 
-        // Render users from Firestore
+        // Render users from local storage
         function renderUsers() {
             userTableBody.innerHTML = '';
+            const users = getLocalStorageItem('users', []);
             const now = new Date();
             const onlineThreshold = 5 * 60 * 1000; // 5 minutes in ms
 
-            db.collection('users').get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    const userId = doc.id;
-                    const lastActive = new Date(userData.lastActive);
-                    const isOnline = (now - lastActive) < onlineThreshold;
+            users.forEach(user => {
+                const lastActive = new Date(user.lastActive);
+                const isOnline = (now - lastActive) < onlineThreshold;
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${userData.username}</td>
-                        <td class="${userData.banned ? 'banned' : ''}">
-                            ${isOnline ? 'Online' : 'Offline'}${userData.banned ? ' (Banned)' : ''}
-                        </td>
-                        <td>${lastActive.toLocaleString()}</td>
-                        <td>
-                            <input type="text" class="ban-message-input" id="banMessage-${userId}" placeholder="Ban message" value="${userData.banMessage || ''}">
-                            <button onclick="toggleBan('${userId}', this)">
-                                ${userData.banned ? 'Unban' : 'Ban'}
-                            </button>
-                        </td>
-                    `;
-                    userTableBody.appendChild(row);
-                });
-            }).catch((error) => {
-                console.error('Error fetching users:', error);
-                loginError.textContent = 'Error loading users. Please try again.';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td class="${user.banned ? 'banned' : ''}">
+                        ${isOnline ? 'Online' : 'Offline'}${user.banned ? ' (Banned)' : ''}
+                    </td>
+                    <td>${lastActive.toLocaleString()}</td>
+                    <td>
+                        <input type="text" class="ban-message-input" id="banMessage-${user.uid}" placeholder="Ban message" value="${user.banMessage || ''}">
+                        <button onclick="toggleBan('${user.uid}', this)">
+                            ${user.banned ? 'Unban' : 'Ban'}
+                        </button>
+                    </td>
+                `;
+                userTableBody.appendChild(row);
             });
         }
 
         // Toggle ban status and update ban message
         function toggleBan(userId, button) {
-            const userDocRef = db.collection('users').doc(userId);
-            const banMessageInput = document.getElementById(`banMessage-${userId}`);
-            const banMessage = banMessageInput.value.trim();
+            const users = getLocalStorageItem('users', []);
+            const userIndex = users.findIndex(u => u.uid === userId);
+            if (userIndex !== -1) {
+                const banMessageInput = document.getElementById(`banMessage-${userId}`);
+                const banMessage = banMessageInput.value.trim();
+                const newBanStatus = !users[userIndex].banned;
 
-            userDocRef.get().then((doc) => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    const newBanStatus = !userData.banned;
-                    userDocRef.update({
-                        banned: newBanStatus,
-                        banMessage: newBanStatus ? banMessage : ''
-                    }).then(() => {
-                        button.textContent = newBanStatus ? 'Unban' : 'Ban';
-                        if (!newBanStatus) {
-                            banMessageInput.value = '';
-                        }
-                        renderUsers();
-                    }).catch((error) => {
-                        console.error('Error updating ban status:', error);
-                        loginError.textContent = 'Error updating ban status. Please try again.';
-                    });
+                users[userIndex].banned = newBanStatus;
+                users[userIndex].banMessage = newBanStatus ? banMessage : '';
+                setLocalStorageItem('users', users);
+
+                button.textContent = newBanStatus ? 'Unban' : 'Ban';
+                if (!newBanStatus) {
+                    banMessageInput.value = '';
                 }
-            }).catch((error) => {
-                console.error('Error fetching user data:', error);
-                loginError.textContent = 'Error fetching user data. Please try again.';
-            });
+                renderUsers();
+            } else {
+                loginError.textContent = 'Error: User not found.';
+            }
         }
 
         // Periodically refresh user list if admin is logged in

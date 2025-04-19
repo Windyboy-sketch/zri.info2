@@ -15,10 +15,6 @@
     <link rel="apple-touch-icon" sizes="167x167" href="ICON.jpg">
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon-default.png">
     <link rel="apple-touch-startup-image" href="IMG_0823.jpeg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
     <style>
         * {
             margin: 0;
@@ -53,11 +49,18 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.9);
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .username-prompt.hiding {
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .username-prompt h2 {
@@ -124,7 +127,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.9);
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -145,7 +148,24 @@
             max-width: 600px;
         }
 
-        /* Existing Styles (Unchanged) */
+        /* Main Content Styles */
+        .main-content {
+            width: 100%;
+            padding: 50px 20px;
+            position: relative;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .main-content.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Wave Animation Styles */
         .wave-container {
             position: fixed;
             bottom: 0;
@@ -236,16 +256,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .main-content {
-            width: 100%;
-            padding: 50px 20px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            display: none; /* Hidden until username is set and user is not banned */
-        }
-
         .content-wrapper {
             max-width: 700px;
             padding: 50px;
@@ -327,7 +337,7 @@
             transform: translateY(20px);
             animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.2s;
             white-space: pre-wrap;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         @keyframes fadeInUp {
@@ -376,6 +386,8 @@
 
         button:nth-child(1) { --index: 0; }
         button:nth-child(2) { --index: 1; }
+        button:nth-child(3) { --index: 2; }
+        button:nth-child(4) { --index: 3; }
 
         @keyframes slideIn {
             to {
@@ -425,6 +437,93 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
+        .app-icon::before {
+            content: '📱';
+            font-size: 1em;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .readme-icon::before {
+            content: '📜';
+            font-size: 1em;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Sidebar Tab Styles */
+        .sidebar-tab {
+            position: fixed;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .sidebar-tab.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #1f1f1f 0%, #333 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(162, 89, 255, 0.3);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInSidebar 0.8s ease forwards;
+            animation-delay: 0.5s; /* Reduced delay to sync with main content */
+        }
+
+        .sidebar-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(162, 89, 255, 0.6);
+            background: linear-gradient(135deg, #333 0%, #444 100%);
+        }
+
+        .sidebar-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(162, 89, 255, 0.4), transparent);
+            transition: width 0.5s ease, height 0.5s ease;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+        }
+
+        .sidebar-button:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .update-icon::before {
+            content: '🔔';
+            font-size: 1em;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes slideInSidebar {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 3.5em; }
             p { font-size: 1.1em; }
@@ -439,6 +538,10 @@
             .wave-container {
                 height: 80px;
             }
+            .sidebar-button {
+                font-size: 0.9em;
+                padding: 10px 15px;
+            }
         }
     </style>
 </head>
@@ -452,9 +555,16 @@
     </div>
 
     <!-- Ban Message (Hidden by Default) -->
-    <div class="ban-message" id="banMessage" style="display: none;">
+    <div class="ban-message" id="banMessage">
         <h2>You Are Banned</h2>
         <p id="banMessageText"></p>
+    </div>
+
+    <!-- Sidebar Tab -->
+    <div class="sidebar-tab" id="sidebarTab">
+        <a href="update-log.html" id="updateLogLink">
+            <button class="sidebar-button"><span class="update-icon"></span> Updates</button>
+        </a>
     </div>
 
     <!-- Main Content (Hidden Until Username Set and Not Banned) -->
@@ -468,10 +578,12 @@
 
         <div class="content-wrapper">
             <h1 id="title">zri.info</h1>
-            <p>A site for local games, movies, proxies, and other cool things</p>
+            <p>A site for local games, proxies, and other cool things</p>
             <div class="button-container">
                 <a href="game.html" id="gamesLink"><button><span class="play-icon"></span> Games</button></a>
                 <a href="proxy/indexproxy.html"><button><span class="proxy-icon"></span> Proxy</button></a>
+                <a href="app.html"><button><span class="app-icon"></span> App</button></a>
+                <a href="readme.html" id="readmeLink"><button><span class="readme-icon"></span> README</button></a>
             </div>
             <p>If you encounter any games that are not functioning, please report them to <a href="mailto:help@zri.info" style="color: #a259ff; text-decoration: underline;">help@zri.info</a>. Kindly use the following format for your submission:</p>
             <pre>
@@ -482,36 +594,6 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
     </div>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBEGM-Ij8BN8a0hL4bUoU4WEbBy8_gPlKM",
-            authDomain: "zriinfo-f83b7.firebaseapp.com",
-            projectId: "zriinfo-f83b7",
-            storageBucket: "zriinfo-f83b7.firebasestorage.app",
-            messagingSenderId: "582674719038",
-            appId: "1:582674719038:web:5d326ad45a757b6555cc6f",
-            measurementId: "G-2QF2NTJXCN"
-        };
-
-        // Check if Firebase scripts are loaded
-        if (typeof firebase === 'undefined') {
-            console.error('Firebase SDK not loaded. Check network or ad blocker.');
-            document.getElementById('usernameError').textContent = 'Failed to load Firebase. Check your network or disable ad blocker.';
-        }
-
-        // Initialize Firebase
-        let app, auth, db;
-        try {
-            app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-            console.log('Firebase initialized successfully');
-        } catch (error) {
-            console.error('Firebase initialization failed:', error);
-            document.getElementById('usernameError').textContent = 'Failed to connect to server: ' + error.message;
-            return;
-        }
-
         // Elements
         const usernamePrompt = document.getElementById('usernamePrompt');
         const usernameInput = document.getElementById('usernameInput');
@@ -520,80 +602,88 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
         const mainContent = document.getElementById('mainContent');
         const banMessage = document.getElementById('banMessage');
         const banMessageText = document.getElementById('banMessageText');
+        const sidebarTab = document.getElementById('sidebarTab');
 
-        // Utility function to add timeout to promises
-        function withTimeout(promise, timeoutMs) {
-            const timeout = new Promise((_, reject) => {
-                setTimeout(() => {
-                    reject(new Error('Operation timed out after ' + timeoutMs + 'ms'));
-                }, timeoutMs);
-            });
-            return Promise.race([promise, timeout]);
+        // Local Storage Helper Functions
+        function getLocalStorageItem(key, defaultValue) {
+            try {
+                const item = localStorage.getItem(key);
+                if (!item) return defaultValue;
+                const parsed = JSON.parse(item);
+                return Array.isArray(defaultValue) && !Array.isArray(parsed) ? defaultValue : parsed;
+            } catch (error) {
+                console.error(`Error parsing local storage item for key ${key}:`, error);
+                return defaultValue;
+            }
         }
 
-        // Sign in anonymously on page load
-        auth.onAuthStateChanged((user) => {
-            console.log('Auth state changed, user:', user);
+        function setLocalStorageItem(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (error) {
+                console.error(`Error setting local storage item for key ${key}:`, error);
+            }
+        }
+
+        // Initialize local storage "database" for all users
+        if (!localStorage.getItem('users')) {
+            setLocalStorageItem('users', []);
+        }
+
+        // Generate a unique user ID
+        function generateUserId() {
+            return 'user_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+        }
+
+        // Get or set the current user's ID
+        let currentUserId = localStorage.getItem('currentUserId');
+        if (!currentUserId) {
+            currentUserId = generateUserId();
+            localStorage.setItem('currentUserId', currentUserId);
+        }
+
+        // Check user status on page load
+        window.addEventListener('load', () => {
+            const users = getLocalStorageItem('users', []);
+            const user = users.find(u => u.uid === currentUserId);
+
+            // Set initial states to prevent flicker
+            usernamePrompt.style.display = 'none';
+            mainContent.style.display = 'none';
+            banMessage.style.display = 'none';
+
             if (user) {
-                console.log('User signed in, UID:', user.uid);
-                // User is signed in, check their ban status
-                const userDocRef = db.collection('users').doc(user.uid);
-                withTimeout(userDocRef.get(), 10000)
-                    .then((doc) => {
-                        if (doc.exists) {
-                            const userData = doc.data();
-                            console.log('User data retrieved:', userData);
-                            if (userData.banned) {
-                                // User is banned, show ban message
-                                banMessage.style.display = 'flex';
-                                banMessageText.textContent = userData.banMessage || 'You have been banned from zri.info.';
-                                usernamePrompt.style.display = 'none';
-                                mainContent.style.display = 'none';
-                            } else {
-                                // User is not banned, show main content
-                                usernamePrompt.style.display = 'none';
-                                mainContent.style.display = 'flex';
-                                startAnimations();
-                                updateUserActivity(user.uid);
-                            }
-                        } else {
-                            // No user document, likely a new user waiting for username
-                            console.log('No user document found, prompting for username');
-                            usernamePrompt.style.display = 'flex';
-                            mainContent.style.display = 'none';
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error checking user data:', error);
-                        usernameError.textContent = 'Error loading user data: ' + error.message;
-                    });
+                if (user.banned) {
+                    // Show ban message
+                    banMessage.style.display = 'flex';
+                    banMessageText.textContent = user.banMessage || 'You have been banned from zri.info.';
+                } else {
+                    // Show main content and sidebar
+                    mainContent.style.display = 'flex';
+                    mainContent.classList.add('visible');
+                    setTimeout(() => {
+                        sidebarTab.classList.add('visible');
+                        console.log('Sidebar tab should now be visible');
+                    }, 500); // Sync with main content fade-in
+                    startAnimations();
+                    updateUserActivity(currentUserId);
+                }
             } else {
-                // No user signed in, sign in anonymously
-                console.log('No user signed in, attempting anonymous sign-in');
-                withTimeout(auth.signInAnonymously(), 10000)
-                    .then(() => {
-                        console.log('Anonymous sign-in successful');
-                    })
-                    .catch((error) => {
-                        console.error('Error signing in anonymously on page load:', error);
-                        usernameError.textContent = 'Error signing in: ' + error.message;
-                    });
+                // Show username prompt
+                usernamePrompt.style.display = 'flex';
             }
         });
 
-        // Register username and save to Firestore
-        async function registerUsername() {
-            console.log('registerUsername() called');
+        // Register username and save to local storage
+        function registerUsername() {
             joinButton.disabled = true;
             joinButton.textContent = 'Joining...';
             usernameError.textContent = '';
 
             const username = usernameInput.value.trim();
-            let user = auth.currentUser;
 
             // Validate username
             if (!username) {
-                console.log('Validation failed: Username is empty');
                 usernameError.textContent = 'Please enter a username.';
                 joinButton.disabled = false;
                 joinButton.textContent = 'Join';
@@ -601,7 +691,6 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             }
 
             if (username.length < 3 || username.length > 20) {
-                console.log('Validation failed: Username length invalid');
                 usernameError.textContent = 'Username must be between 3 and 20 characters.';
                 joinButton.disabled = false;
                 joinButton.textContent = 'Join';
@@ -609,96 +698,67 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             }
 
             if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                console.log('Validation failed: Username contains invalid characters');
                 usernameError.textContent = 'Username can only contain letters, numbers, and underscores.';
                 joinButton.disabled = false;
                 joinButton.textContent = 'Join';
                 return;
             }
 
-            // Ensure user is signed in
-            console.log('Checking if user is signed in, currentUser:', user);
-            if (!user) {
-                console.log('No user signed in, attempting to sign in anonymously');
-                try {
-                    const userCredential = await withTimeout(auth.signInAnonymously(), 10000);
-                    user = userCredential.user;
-                    console.log('Anonymous sign-in successful in registerUsername, UID:', user.uid);
-                } catch (error) {
-                    console.error('Error signing in anonymously in registerUsername:', error);
-                    usernameError.textContent = 'Error signing in: ' + error.message + '. Check your network or Firebase settings.';
-                    joinButton.disabled = false;
-                    joinButton.textContent = 'Join';
-                    return;
-                }
-            }
+            // Check if username is already taken
+            let users = getLocalStorageItem('users', []);
+            const usernameTaken = users.some(u => u && u.username === username);
 
-            if (user) {
-                console.log('User is signed in, proceeding with registration, UID:', user.uid);
-                const userDocRef = db.collection('users').doc(user.uid);
-                // Check if username is already taken
-                console.log('Checking if username is taken:', username);
-                try {
-                    const querySnapshot = await withTimeout(
-                        db.collection('users').where('username', '==', username).get(),
-                        10000
-                    );
-                    console.log('Username query result, empty?', querySnapshot.empty);
-                    if (!querySnapshot.empty) {
-                        console.log('Username already taken');
-                        usernameError.textContent = 'Username is already taken.';
-                        joinButton.disabled = false;
-                        joinButton.textContent = 'Join';
-                    } else {
-                        // Save username and initial user data
-                        console.log('Saving user data to Firestore');
-                        await withTimeout(
-                            userDocRef.set({
-                                username: username,
-                                banned: false,
-                                banMessage: '',
-                                lastActive: new Date().toISOString()
-                            }),
-                            10000
-                        );
-                        console.log('User data saved successfully');
-                        usernamePrompt.style.display = 'none';
-                        mainContent.style.display = 'flex';
-                        startAnimations();
-                        updateUserActivity(user.uid);
-                        joinButton.disabled = false;
-                        joinButton.textContent = 'Join';
-                    }
-                } catch (error) {
-                    console.error('Error during username registration:', error);
-                    usernameError.textContent = 'Error: ' + error.message + '. Check your network or Firebase settings.';
-                    joinButton.disabled = false;
-                    joinButton.textContent = 'Join';
-                }
-            } else {
-                console.log('No user signed in after attempting sign-in');
-                usernameError.textContent = 'Error: Not signed in. Please try again.';
+            if (usernameTaken) {
+                usernameError.textContent = 'Username is already taken.';
                 joinButton.disabled = false;
                 joinButton.textContent = 'Join';
+                return;
+            }
+
+            // Save user data
+            const newUser = {
+                uid: currentUserId,
+                username: username,
+                banned: false,
+                banMessage: '',
+                lastActive: new Date().toISOString()
+            };
+            users.push(newUser);
+            setLocalStorageItem('users', users);
+
+            // Transition to main content
+            usernamePrompt.classList.add('hiding');
+            setTimeout(() => {
+                usernamePrompt.style.display = 'none';
+                mainContent.style.display = 'flex';
+                mainContent.classList.add('visible');
+                setTimeout(() => {
+                    sidebarTab.classList.add('visible');
+                    console.log('Sidebar tab should now be visible after joining');
+                }, 500); // Sync with main content fade-in
+                startAnimations();
+                updateUserActivity(currentUserId);
+                joinButton.disabled = false;
+                joinButton.textContent = 'Join';
+            }, 300);
+        }
+
+        // Update user activity
+        function updateUserActivity(uid) {
+            const users = getLocalStorageItem('users', []);
+            const userIndex = users.findIndex(u => u.uid === uid);
+            if (userIndex !== -1) {
+                users[userIndex].lastActive = new Date().toISOString();
+                setLocalStorageItem('users', users);
             }
         }
 
-        // Update user activity periodically
-        function updateUserActivity(uid) {
-            console.log('Updating user activity for UID:', uid);
-            const userDocRef = db.collection('users').doc(uid);
-            userDocRef.update({
-                lastActive: new Date().toISOString()
-            }).catch((error) => {
-                console.error('Error updating activity:', error);
-            });
-        }
-
-        // Update activity every 30 seconds if user is not banned
+        // Update activity every 30 seconds
         setInterval(() => {
-            const user = auth.currentUser;
-            if (user && mainContent.style.display === 'flex') {
-                updateUserActivity(user.uid);
+            const users = getLocalStorageItem('users', []);
+            const user = users.find(u => u.uid === currentUserId);
+            if (user && !user.banned && mainContent.classList.contains('visible')) {
+                updateUserActivity(currentUserId);
             }
         }, 30000);
 
@@ -748,20 +808,36 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             }
         });
 
-        window.addEventListener('load', () => {
-            if (document.visibilityState === 'visible') startAnimations();
-        });
-
         window.addEventListener('resize', () => {
             if (document.visibilityState === 'visible') startParticles();
         });
 
+        // Smooth navigation
         document.getElementById('gamesLink')?.addEventListener('click', function(e) {
             e.preventDefault();
-            document.body.classList.add('fade-out');
+            mainContent.style.opacity = '0';
+            mainContent.style.transition = 'opacity 0.3s ease';
             setTimeout(() => {
                 window.location.href = this.href;
-            }, 500);
+            }, 300);
+        });
+
+        document.getElementById('readmeLink')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            mainContent.style.opacity = '0';
+            mainContent.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 300);
+        });
+
+        document.getElementById('updateLogLink')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            mainContent.style.opacity = '0';
+            mainContent.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 300);
         });
 
         // Handle Enter key for username input

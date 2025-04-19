@@ -5,42 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Games - zri.info</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7573512423058423"
-     crossorigin="anonymous"></script>
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="viewport" content="width=device-width,initial-scale=1.5,user-scalable=no">
-	 <meta name="apple-mobile-web-app-title" content="zri">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7573512423058423" crossorigin="anonymous"></script>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width,initial-scale=1.5,user-scalable=no">
+  <meta name="apple-mobile-web-app-title" content="zri">
   <link rel="apple-touch-icon" sizes="180x180" href="ICON.jpg">
-    <link rel="apple-touch-icon" sizes="152x152" href="ICON.jpg">
-    <link rel="apple-touch-icon" sizes="167x167" href="ICON.jpg">
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-default.png">
-    <link rel="apple-touch-startup-image" href="IMG_0823.jpeg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-	<script type="text/javascript">
-		(function(document,navigator,standalone) {
-			// prevents links from apps from oppening in mobile safari
-			// this javascript must be the first script in your <head>
-			if ((standalone in navigator) && navigator[standalone]) {
-				var curnode, location=document.location, stop=/^(a|html)$/i;
-				document.addEventListener('click', function(e) {
-					curnode=e.target;
-					while (!(stop).test(curnode.nodeName)) {
-						curnode=curnode.parentNode;
-					}
-					// Condidions to do this only on links to your own app
-					// if you want all links, use if('href' in curnode) instead.
-					if(
-						'href' in curnode && // is a link
-						(chref=curnode.href).replace(location.href,'').indexOf('#') && // is not an anchor
-						(	!(/^[a-z\+\.\-]+:/i).test(chref) ||                       // either does not have a proper scheme (relative links)
-							chref.indexOf(location.protocol+'//'+location.host)===0 ) // or is in the same protocol and domain
-					) {
-						e.preventDefault();
-						location.href = curnode.href;
-					}
-				},false);
-			}
-		})(document,window.navigator,'standalone');
-	</script>
+  <link rel="apple-touch-icon" sizes="152x152" href="ICON.jpg">
+  <link rel="apple-touch-icon" sizes="167x167" href="ICON.jpg">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon-default.png">
+  <link rel="apple-touch-startup-image" href="IMG_0823.jpeg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <script type="text/javascript">
+    (function(document,navigator,standalone) {
+      if ((standalone in navigator) && navigator[standalone]) {
+        var curnode, location=document.location, stop=/^(a|html)$/i;
+        document.addEventListener('click', function(e) {
+          curnode=e.target;
+          while (!(stop).test(curnode.nodeName)) {
+            curnode=curnode.parentNode;
+          }
+          if(
+            'href' in curnode &&
+            (chref=curnode.href).replace(location.href,'').indexOf('#') &&
+            (	!(/^[a-z\+\.\-]+:/i).test(chref) ||
+              chref.indexOf(location.protocol+'//'+location.host)===0 )
+          ) {
+            e.preventDefault();
+            location.href = curnode.href;
+          }
+        },false);
+      }
+    })(document,window.navigator,'standalone');
+  </script>
   <style>
     * {
       margin: 0;
@@ -61,7 +56,51 @@
       overflow-x: hidden;
     }
 
-    /* Enhanced Wave Effect with Vertical Movement */
+    /* Ban Message Styles (Copied from index.html) */
+    .ban-message {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      text-align: center;
+    }
+
+    .ban-message h2 {
+      font-size: 2.5em;
+      color: #ff6666;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 15px rgba(255, 102, 102, 0.7);
+    }
+
+    .ban-message p {
+      font-size: 1.2em;
+      color: #d0d0d0;
+      max-width: 600px;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .main-content.visible {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* Wave Effect */
     .wave-container {
       position: fixed;
       bottom: 0;
@@ -110,7 +149,7 @@
       100% { transform: translateY(0); }
     }
 
-    /* Shooting Stars (Kept as Original) */
+    /* Shooting Stars */
     .stars {
       position: fixed;
       top: 0;
@@ -147,7 +186,7 @@
       100% { transform: translateX(-120vw) translateY(80vh); opacity: 0.3; }
     }
 
-    /* Letter-by-Letter Animation for Header */
+    /* Header Animation */
     h1 {
       font-size: 4rem;
       color: #a259ff;
@@ -568,6 +607,8 @@
       .report-section h2 { font-size: 1.5rem; }
       .report-section p { font-size: 0.9rem; }
       .report-section pre { font-size: 0.8rem; padding: 0.8rem; }
+      .ban-message h2 { font-size: 2rem; }
+      .ban-message p { font-size: 1rem; }
     }
 
     @media (max-width: 480px) {
@@ -577,84 +618,134 @@
       .report-section h2 { font-size: 1.3rem; }
       .report-section p { font-size: 0.8rem; }
       .report-section pre { font-size: 0.7rem; }
+      .ban-message h2 { font-size: 1.5rem; }
+      .ban-message p { font-size: 0.9rem; }
     }
   </style>
 </head>
 <body>
-  <div class="stars"></div>
-  <div class="wave-container">
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div class="wave"></div>
-  </div>
-  <a class="back-link" href="index.html">← Back to Home</a>
-
-  <h1 id="title">Games</h1>
-  <p class="description">Explore local games on zri.info</p>
-
-  <div class="controls">
-    <input type="text" class="search-bar" id="searchBar" placeholder="Search games..." oninput="applyFilters()">
-    <div class="filter-bar">
-      <label for="platform">Platform:</label>
-      <select id="platform" onchange="applyFilters()">
-        <option value="all">All</option>
-        <option value="windows">Windows</option>
-        <option value="linux">Linux</option>
-      </select>
-    </div>
-    <div class="filter-bar">
-      <label for="genre">Genre:</label>
-      <select id="genre" onchange="applyFilters()">
-        <option value="all">All</option>
-        <option value="horror">Horror</option>
-        <option value="rpg">RPG</option>
-        <option value="puzzle">Puzzle</option>
-        <option value="action">Action</option>
-      </select>
-    </div>
-    <div class="filter-bar">
-      <label for="favorites">Favorites:</label>
-      <select id="favorites" onchange="applyFilters()">
-        <option value="all">All Games</option>
-        <option value="favorites">Favorites Only</option>
-      </select>
-    </div>
-    <div class="sort-bar">
-      <label for="sort">Sort by:</label>
-      <select id="sort" onchange="applyFilters()">
-        <option value="title-asc">Title (A-Z)</option>
-        <option value="title-desc">Title (Z-A)</option>
-        <option value="platform-asc">Platform (A-Z)</option>
-        <option value="platform-desc">Platform (Z-A)</option>
-        <option value="genre-asc">Genre (A-Z)</option>
-        <option value="genre-desc">Genre (Z-A)</option>
-      </select>
-    </div>
+  <!-- Ban Message (Hidden by Default) -->
+  <div class="ban-message" id="banMessage">
+    <h2>You Are Banned</h2>
+    <p id="banMessageText"></p>
   </div>
 
-  <div class="game-grid" id="gameGrid"></div>
+  <!-- Main Content (Hidden Until Ban Check) -->
+  <div class="main-content" id="mainContent">
+    <div class="stars"></div>
+    <div class="wave-container">
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+    </div>
+    <a class="back-link" href="index.html">← Back to Home</a>
 
-  <div class="pagination">
-    <button onclick="prevPage()" id="prevBtn">Prev</button>
-    <span id="pageInfo"></span>
-    <button onclick="nextPage()" id="nextBtn">Next</button>
+    <h1 id="title">Games</h1>
+    <p class="description">Explore local games on zri.info</p>
+
+    <div class="controls">
+      <input type="text" class="search-bar" id="searchBar" placeholder="Search games..." oninput="applyFilters()">
+      <div class="filter-bar">
+        <label for="platform">Platform:</label>
+        <select id="platform" onchange="applyFilters()">
+          <option value="all">All</option>
+          <option value="windows">Windows</option>
+          <option value="linux">Linux</option>
+        </select>
+      </div>
+      <div class="filter-bar">
+        <label for="genre">Genre:</label>
+        <select id="genre" onchange="applyFilters()">
+          <option value="all">All</option>
+          <option value="horror">Horror</option>
+          <option value="rpg">RPG</option>
+          <option value="puzzle">Puzzle</option>
+          <option value="action">Action</option>
+        </select>
+      </div>
+      <div class="filter-bar">
+        <label for="favorites">Favorites:</label>
+        <select id="favorites" onchange="applyFilters()">
+          <option value="all">All Games</option>
+          <option value="favorites">Favorites Only</option>
+        </select>
+      </div>
+      <div class="sort-bar">
+        <label for="sort">Sort by:</label>
+        <select id="sort" onchange="applyFilters()">
+          <option value="title-asc">Title (A-Z)</option>
+          <option value="title-desc">Title (Z-A)</option>
+          <option value="platform-asc">Platform (A-Z)</option>
+          <option value="platform-desc">Platform (Z-A)</option>
+          <option value="genre-asc">Genre (A-Z)</option>
+          <option value="genre-desc">Genre (Z-A)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="game-grid" id="gameGrid"></div>
+
+    <div class="pagination">
+      <button onclick="prevPage()" id="prevBtn">Prev</button>
+      <span id="pageInfo"></span>
+      <button onclick="nextPage()" id="nextBtn">Next</button>
+    </div>
+
+    <div class="report-section">
+      <h2>Game Issues Report</h2>
+      <p>The following games have been reported as non-functional. Please address these issues to improve the user experience:</p>
+      <pre>none!</pre>
+    </div>
+
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+
+    <footer>
+      © 2025 zri.info. All rights reserved.
+    </footer>
   </div>
-
-  <div class="report-section">
-    <h2>Game Issues Report</h2>
-    <p>The following games have been reported as non-functional. Please address these issues to improve the user experience:</p>
-    <pre>
-     none!
-    </pre>
-  </div>
-
-  <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
-
-  <footer>
-    © 2025 zri.info. All rights reserved.
-  </footer>
 
   <script>
+    // Local Storage Helper Functions (Copied from index.html)
+    function getLocalStorageItem(key, defaultValue) {
+      try {
+        const item = localStorage.getItem(key);
+        if (!item) return defaultValue;
+        const parsed = JSON.parse(item);
+        return Array.isArray(defaultValue) && !Array.isArray(parsed) ? defaultValue : parsed;
+      } catch (error) {
+        console.error(`Error parsing local storage item for key ${key}:`, error);
+        return defaultValue;
+      }
+    }
+
+    // Get current user's ID
+    const currentUserId = localStorage.getItem('currentUserId');
+
+    // Check ban status on page load
+    window.addEventListener('load', () => {
+      const banMessage = document.getElementById('banMessage');
+      const banMessageText = document.getElementById('banMessageText');
+      const mainContent = document.getElementById('mainContent');
+
+      // Set initial states to prevent flicker
+      banMessage.style.display = 'none';
+      mainContent.style.display = 'none';
+
+      const users = getLocalStorageItem('users', []);
+      const user = users.find(u => u.uid === currentUserId);
+
+      if (user && user.banned) {
+        // Show ban message
+        banMessage.style.display = 'flex';
+        banMessageText.textContent = user.banMessage || 'You have been banned from zri.info.';
+      } else {
+        // Show main content
+        mainContent.style.display = 'flex';
+        mainContent.classList.add('visible');
+        startParticles(); // Start animations
+      }
+    });
+
     // Split Header into Letters for Animation
     const title = document.getElementById('title');
     const text = title.textContent;
@@ -668,12 +759,135 @@
     });
 
     // Game data
-    const games=[{title:"2048",platform:"Windows",genre:"Puzzle",path:"games/2048/index.html"},{title:"adarkroom",platform:"Windows",genre:"Horror",path:"games/adarkroom/index.html"},{title:"asciispace",platform:"Linux",genre:"Action",path:"games/asciispace/index.html"},{title:"asteroids",platform:"Linux",genre:"Action",path:"games/asteroids/index.html"},{title:"astray",platform:"Windows",genre:"Horror",path:"games/astray/index.html"},{title:"backcountry",platform:"Linux",genre:"RPG",path:"games/backcountry/index.html"},{title:"baldisbasics",platform:"Windows",genre:"Horror",path:"games/baldisbasics/index.html"},{title:"basketballlegends",platform:"Windows",genre:"Action",path:"games/basketballlegends/index.html"},{title:"basketballstars",platform:"Windows",genre:"Action",path:"games/basketballstars/index.html"},{title:"basketbrosio",platform:"Linux",genre:"Action",path:"games/basketbrosio/index.html"},{title:"basketrandom",platform:"Windows",genre:"Action",path:"games/basketrandom/index.html"},{title:"bitlife",platform:"Linux",genre:"RPG",path:"games/bitlife/index.html"},{title:"blackholesquare",platform:"Windows",genre:"Puzzle",path:"games/blackholesquare/index.html"},{title:"bounceback",platform:"Linux",genre:"Action",path:"games/bounceback/index.html"},{title:"breakout",platform:"Linux",genre:"Action",path:"games/breakout/index.html"},{title:"btd4",platform:"Windows",genre:"Action",path:"games/btd4/index.html"},{title:"captaincallisto",platform:"Linux",genre:"Action",path:"games/captaincallisto/index.html"},{title:"chess",platform:"Windows",genre:"Puzzle",path:"games/chess/index.html"},{title:"chromanichord",platform:"Linux",genre:"Puzzle",path:"games/chromanichord/index.html"},{title:"chromedino",platform:"Windows",genre:"Action",path:"games/chromedino/index.html"},{title:"clickerheroes",platform:"Linux",genre:"RPG",path:"games/clickerheroes/index.html"},{title:"clusterush",platform:"Windows",genre:"Action",path:"games/clusterush/index.html"},{title:"connect3",platform:"Linux",genre:"Puzzle",path:"games/connect3/index.html"},{title:"cookieclicker",platform:"Windows",genre:"Action",path:"games/cookieclicker/index.html"},{title:"crossyroad",platform:"Linux",genre:"Action",path:"games/crossyroad/index.html"},{title:"csgoclicker",platform:"Windows",genre:"Action",path:"games/csgoclicker/index.html"},{title:"cubefield",platform:"Linux",genre:"Action",path:"games/cubefield/index.html"},{title:"cubitomayhem",platform:"Windows",genre:"Action",path:"games/cubitomayhem/index.html"},{title:"cuttherope",platform:"Linux",genre:"Puzzle",path:"games/cuttherope/index.html"},{title:"cuttheropeholiday",platform:"Windows",genre:"Puzzle",path:"games/cuttheropeholiday/index.html"},{title:"cuttheropetimetravel",platform:"Linux",genre:"Puzzle",path:"games/cuttheropetimetravel/index.html"},{title:"deathrun3d",platform:"Windows",genre:"Action",path:"games/deathrun3d/index.html"},{title:"deepestsword",platform:"Linux",genre:"Action",path:"games/deepestsword/index.html"},{title:"doodlejump",platform:"Windows",genre:"Action",path:"games/doodlejump/index.html"},{title:"doom",platform:"Linux",genre:"Action",path:"games/doom/index.html"},{title:"drawthehill",platform:"Windows",genre:"Puzzle",path:"games/drawthehill/index.html"},{title:"drivemad",platform:"Linux",genre:"Action",path:"games/drivemad/index.html"},{title:"ducklife",platform:"Windows",genre:"RPG",path:"games/ducklife/index.html"},{title:"ducklife2",platform:"Linux",genre:"RPG",path:"games/ducklife2/index.html"},{title:"ducklife3",platform:"Windows",genre:"RPG",path:"games/ducklife3/index.html"},{title:"ducklife4",platform:"Linux",genre:"RPG",path:"games/ducklife4/index.html"},{title:"ducklife5",platform:"Windows",genre:"RPG",path:"games/ducklife5/index.html"},{title:"earntodie",platform:"Linux",genre:"Action",path:"games/earntodie/index.html"},{title:"edgenotfound",platform:"Windows",genre:"Puzzle",path:"games/edgenotfound/index.html"},{title:"eggycar",platform:"Linux",genre:"Action",path:"games/eggycar/index.html"},{title:"evilglitch",platform:"Windows",genre:"Horror",path:"games/evilglitch/index.html"},{title:"factoryballsforever",platform:"Linux",genre:"Puzzle",path:"games/factoryballsforever/index.html"},{title:"fireboyandwatergirlforesttemple",platform:"Windows",genre:"Puzzle",path:"games/fireboyandwatergirlforesttemple/index.html"},{title:"flappy2048",platform:"Linux",genre:"Puzzle",path:"games/flappy2048/index.html"},{title:"flappybird",platform:"Windows",genre:"Action",path:"games/flappybird/index.html"},{title:"flappyplane",platform:"Linux",genre:"Action",path:"games/flappyplane/index.html"},{title:"flightsimulator",platform:"Windows",genre:"Action",path:"games/flightsimulator/index.html"},{title:"fridaynightfunkin",platform:"Linux",genre:"Action",path:"games/fridaynightfunkin/index.html"},{title:"friendlyfire",platform:"Windows",genre:"Action",path:"games/friendlyfire/index.html"},{title:"fruitninja",platform:"Linux",genre:"Action",path:"games/fruitninja/index.html"},{title:"geometrydash",platform:"Windows",genre:"Action",path:"games/geometrydash/index.html"},{title:"gladihoppers",platform:"Windows",genre:"Action",path:"games/gladihoppers/index.html"},{title:"googlesnake",platform:"Linux",genre:"Puzzle",path:"games/googlesnake/index.html"},{title:"gopherkart",platform:"Windows",genre:"Action",path:"games/gopherkart/index.html"},{title:"grindcraft",platform:"Linux",genre:"RPG",path:"games/grindcraft/index.html"},{title:"hexql",platform:"Windows",genre:"Action",path:"games/hexql/index.html"},{title:"hextris",platform:"Linux",genre:"Puzzle",path:"games/hextris/index.html"},{title:"highwaytraffic",platform:"Windows",genre:"Action",path:"games/highwaytraffic/index.html"},{title:"konnekt",platform:"Linux",genre:"Puzzle",path:"games/konnekt/index.html"},{title:"learntofly",platform:"Windows",genre:"Action",path:"games/2/learntofly/index.html"},{title:"letssurf",platform:"Linux",genre:"Action",path:"games/letssurf/index.html"},{title:"littlealchemy",platform:"Windows",genre:"Puzzle",path:"games/littlealchemy/index.html"},{title:"mergeroundracers",platform:"Linux",genre:"Action",path:"games/mergeroundracers/index.html"},{title:"monkeymart",platform:"Windows",genre:"RPG",path:"games/monkeymart/index.html"},{title:"motoroadrash3d",platform:"Linux",genre:"Action",path:"games/motoroadrash3d/index.html"},{title:"motox3m",platform:"Windows",genre:"Action",path:"games/motox3m/index.html"},{title:"ninjavsevilcorp",platform:"Linux",genre:"Action",path:"games/ninjavsevilcorp/index.html"},{title:"omnombo",platform:"Windows",genre:"Action",path:"games/omnombo/index.html"},{title:"packabunchas",platform:"Linux",genre:"Puzzle",path:"games/packabunchas/index.html"},{title:"pacman",platform:"Windows",genre:"Action",path:"games/pacman/index.html"},{title:"paperio",platform:"Linux",genre:"Action",path:"games/paperio/index.html"},{title:"particleclicker",platform:"Windows",genre:"Action",path:"games/particleclicker/index.html"},{title:"pushback",platform:"Linux",genre:"Action",path:"games/pushback/index.html"},{title:"q1k3",platform:"Windows",genre:"Action",path:"games/q1k3/index.html"},{title:"racer",platform:"Linux",genre:"Action",path:"games/racer/index.html"},{title:"radiusraid",platform:"Windows",genre:"Action",path:"games/radiusraid/index.html"},{title:"redball4",platform:"Linux",genre:"Action",path:"games/redball4/index.html"},{title:"retrobowl",platform:"Windows",genre:"Action",path:"games/retrobowl/index.html"},{title:"retrohaunt",platform:"Linux",genre:"Horror",path:"games/retrohaunt/index.html"},{title:"riddleschool2",platform:"Windows",genre:"Puzzle",path:"games/riddleschool2/index.html"},{title:"ritz",platform:"Linux",genre:"Puzzle",path:"games/ritz/index.html"},{title:"roadblocks",platform:"Windows",genre:"Action",path:"games/roadblocks/index.html"},{title:"scrapmetal3",platform:"Windows",genre:"Action",path:"games/scrapmetal3/index.html"},{title:"shuttledeck",platform:"Linux",genre:"Puzzle",path:"games/shuttledeck/index.html"},{title:"sketchbook04",platform:"Windows",genre:"Puzzle",path:"games/sketchbook04/index.html"},{title:"sleepingbeauty",platform:"Linux",genre:"RPG",path:"games/sleepingbeauty/index.html"},{title:"slope",platform:"Linux",genre:"Action",path:"games/slope/index.html"},{title:"slope2",platform:"Windows",genre:"Action",path:"games/slope2/index.html"},{title:"snake",platform:"Linux",genre:"Puzzle",path:"games/snake/index.html"},{title:"snowbattle",platform:"Windows",genre:"Action",path:"games/snowbattle/index.html"},{title:"solitaire",platform:"Windows",genre:"Puzzle",path:"games/solitaire/index.html"},{title:"spacecompany",platform:"Linux",genre:"RPG",path:"games/spacecompany/index.html"},{title:"spacegarden",platform:"Windows",genre:"RPG",path:"games/spacegarden/index.html"},{title:"spacehuggers",platform:"Linux",genre:"Action",path:"games/spacehuggers/index.html"},{title:"spaceinvaders",platform:"Windows",genre:"Action",path:"games/spaceinvaders/index.html"},{title:"stack",platform:"Linux",genre:"Puzzle",path:"games/stack/index.html"},{title:"stackball",platform:"Windows",genre:"Action",path:"games/stackball/index.html"},{title:"stickmanhook",platform:"Windows",genre:"Action",path:"games/stickmanhook/index.html"},{title:"stickmansurvival",platform:"Linux",genre:"Action",path:"games/stickmansurvival/index.html"},{title:"subwaysurfersny",platform:"Linux",genre:"Action",path:"games/subwaysurfersny/index.html"},{title:"subwaysurferssingapore",platform:"Windows",genre:"Action",path:"games/subwaysurferssingapore/index.html"},{title:"tanukisunset",platform:"Linux",genre:"Action",path:"games/tanukisunset/index.html"},{title:"tetris",platform:"Windows",genre:"Puzzle",path:"games/tetris/index.html"},{title:"themazeofspacegoblins",platform:"Linux",genre:"Action",path:"games/themazeofspacegoblins/index.html"},{title:"tinyfishing",platform:"Linux",genre:"RPG",path:"games/tinyfishing/index.html"},{title:"tombofthmask",platform:"Windows",genre:"Action",path:"games/tombofthmask/index.html"},{title:"topspeedracing3d",platform:"Linux",genre:"Action",path:"games/topspeedracing3d/index.html"},{title:"towermaster",platform:"Windows",genre:"Puzzle",path:"games/towermaster/index.html"},{title:"trimps",platform:"Linux",genre:"RPG",path:"games/trimps/index.html"},{title:"tunnelrush",platform:"Windows",genre:"Action",path:"games/tunnelrush/index.html"},{title:"vex4",platform:"Linux",genre:"Action",path:"games/vex4/index.html"},{title:"vex5",platform:"Windows",genre:"Action",path:"games/vex5/index.html"},{title:"vex6",platform:"Linux",genre:"Action",path:"games/vex6/index.html"},{title:"webecomewhatwebehold",platform:"Windows",genre:"Puzzle",path:"games/webecomewhatwebehold/index.html"},{title:"worldshardestgame2",platform:"Linux",genre:"Puzzle",path:"games/worldshardestgame2/index.html"},{title:"xx142b2exe",platform:"Windows",genre:"Action",path:"games/xx142b2exe/index.html"},{title:"zombsroyale",platform:"Linux",genre:"Action",path:"games/zombsroyale/index.html"}];
+    const games = [
+      {title:"2048",platform:"Windows",genre:"Puzzle",path:"games/2048/index.html"},
+      {title:"adarkroom",platform:"Windows",genre:"Horror",path:"games/adarkroom/index.html"},
+      {title:"asciispace",platform:"Linux",genre:"Action",path:"games/asciispace/index.html"},
+      {title:"asteroids",platform:"Linux",genre:"Action",path:"games/asteroids/index.html"},
+      {title:"astray",platform:"Windows",genre:"Horror",path:"games/astray/index.html"},
+      {title:"backcountry",platform:"Linux",genre:"RPG",path:"games/backcountry/index.html"},
+      {title:"baldisbasics",platform:"Windows",genre:"Horror",path:"games/baldisbasics/index.html"},
+      {title:"basketballlegends",platform:"Windows",genre:"Action",path:"games/basketballlegends/index.html"},
+      {title:"basketballstars",platform:"Windows",genre:"Action",path:"games/basketballstars/index.html"},
+      {title:"basketbrosio",platform:"Linux",genre:"Action",path:"games/basketbrosio/index.html"},
+      {title:"basketrandom",platform:"Windows",genre:"Action",path:"games/basketrandom/index.html"},
+      {title:"bitlife",platform:"Linux",genre:"RPG",path:"games/bitlife/index.html"},
+      {title:"blackholesquare",platform:"Windows",genre:"Puzzle",path:"games/blackholesquare/index.html"},
+      {title:"bounceback",platform:"Linux",genre:"Action",path:"games/bounceback/index.html"},
+      {title:"breakout",platform:"Linux",genre:"Action",path:"games/breakout/index.html"},
+      {title:"btd4",platform:"Windows",genre:"Action",path:"games/btd4/index.html"},
+      {title:"captaincallisto",platform:"Linux",genre:"Action",path:"games/captaincallisto/index.html"},
+      {title:"chess",platform:"Windows",genre:"Puzzle",path:"games/chess/index.html"},
+      {title:"chromanichord",platform:"Linux",genre:"Puzzle",path:"games/chromanichord/index.html"},
+      {title:"chromedino",platform:"Windows",genre:"Action",path:"games/chromedino/index.html"},
+      {title:"clickerheroes",platform:"Linux",genre:"RPG",path:"games/clickerheroes/index.html"},
+      {title:"clusterush",platform:"Windows",genre:"Action",path:"games/clusterush/index.html"},
+      {title:"connect3",platform:"Linux",genre:"Puzzle",path:"games/connect3/index.html"},
+      {title:"cookieclicker",platform:"Windows",genre:"Action",path:"games/cookieclicker/index.html"},
+      {title:"crossyroad",platform:"Linux",genre:"Action",path:"games/crossyroad/index.html"},
+      {title:"csgoclicker",platform:"Windows",genre:"Action",path:"games/csgoclicker/index.html"},
+      {title:"cubefield",platform:"Linux",genre:"Action",path:"games/cubefield/index.html"},
+      {title:"cubitomayhem",platform:"Windows",genre:"Action",path:"games/cubitomayhem/index.html"},
+      {title:"cuttherope",platform:"Linux",genre:"Puzzle",path:"games/cuttherope/index.html"},
+      {title:"cuttheropeholiday",platform:"Windows",genre:"Puzzle",path:"games/cuttheropeholiday/index.html"},
+      {title:"cuttheropetimetravel",platform:"Linux",genre:"Puzzle",path:"games/cuttheropetimetravel/index.html"},
+      {title:"deathrun3d",platform:"Windows",genre:"Action",path:"games/deathrun3d/index.html"},
+      {title:"deepestsword",platform:"Linux",genre:"Action",path:"games/deepestsword/index.html"},
+      {title:"doodlejump",platform:"Windows",genre:"Action",path:"games/doodlejump/index.html"},
+      {title:"doom",platform:"Linux",genre:"Action",path:"games/doom/index.html"},
+      {title:"drawthehill",platform:"Windows",genre:"Puzzle",path:"games/drawthehill/index.html"},
+      {title:"drivemad",platform:"Linux",genre:"Action",path:"games/drivemad/index.html"},
+      {title:"ducklife",platform:"Windows",genre:"RPG",path:"games/ducklife/index.html"},
+      {title:"ducklife2",platform:"Linux",genre:"RPG",path:"games/ducklife2/index.html"},
+      {title:"ducklife3",platform:"Windows",genre:"RPG",path:"games/ducklife3/index.html"},
+      {title:"ducklife4",platform:"Linux",genre:"RPG",path:"games/ducklife4/index.html"},
+      {title:"ducklife5",platform:"Windows",genre:"RPG",path:"games/ducklife5/index.html"},
+      {title:"earntodie",platform:"Linux",genre:"Action",path:"games/earntodie/index.html"},
+      {title:"edgenotfound",platform:"Windows",genre:"Puzzle",path:"games/edgenotfound/index.html"},
+      {title:"eggycar",platform:"Linux",genre:"Action",path:"games/eggycar/index.html"},
+      {title:"evilglitch",platform:"Windows",genre:"Horror",path:"games/evilglitch/index.html"},
+      {title:"factoryballsforever",platform:"Linux",genre:"Puzzle",path:"games/factoryballsforever/index.html"},
+      {title:"fireboyandwatergirlforesttemple",platform:"Windows",genre:"Puzzle",path:"games/fireboyandwatergirlforesttemple/index.html"},
+      {title:"flappy2048",platform:"Linux",genre:"Puzzle",path:"games/flappy2048/index.html"},
+      {title:"flappybird",platform:"Windows",genre:"Action",path:"games/flappybird/index.html"},
+      {title:"flappyplane",platform:"Linux",genre:"Action",path:"games/flappyplane/index.html"},
+      {title:"flightsimulator",platform:"Windows",genre:"Action",path:"games/flightsimulator/index.html"},
+      {title:"fridaynightfunkin",platform:"Linux",genre:"Action",path:"games/fridaynightfunkin/index.html"},
+      {title:"friendlyfire",platform:"Windows",genre:"Action",path:"games/friendlyfire/index.html"},
+      {title:"fruitninja",platform:"Linux",genre:"Action",path:"games/fruitninja/index.html"},
+      {title:"geometrydash",platform:"Windows",genre:"Action",path:"games/geometrydash/index.html"},
+      {title:"gladihoppers",platform:"Windows",genre:"Action",path:"games/gladihoppers/index.html"},
+      {title:"googlesnake",platform:"Linux",genre:"Puzzle",path:"games/googlesnake/index.html"},
+      {title:"gopherkart",platform:"Windows",genre:"Action",path:"games/gopherkart/index.html"},
+      {title:"grindcraft",platform:"Linux",genre:"RPG",path:"games/grindcraft/index.html"},
+      {title:"hexql",platform:"Windows",genre:"Action",path:"games/hexql/index.html"},
+      {title:"hextris",platform:"Linux",genre:"Puzzle",path:"games/hextris/index.html"},
+      {title:"highwaytraffic",platform:"Windows",genre:"Action",path:"games/highwaytraffic/index.html"},
+      {title:"konnekt",platform:"Linux",genre:"Puzzle",path:"games/konnekt/index.html"},
+      {title:"learntofly",platform:"Windows",genre:"Action",path:"games/2/learntofly/index.html"},
+      {title:"letssurf",platform:"Linux",genre:"Action",path:"games/letssurf/index.html"},
+      {title:"littlealchemy",platform:"Windows",genre:"Puzzle",path:"games/littlealchemy/index.html"},
+      {title:"mergeroundracers",platform:"Linux",genre:"Action",path:"games/mergeroundracers/index.html"},
+      {title:"monkeymart",platform:"Windows",genre:"RPG",path:"games/monkeymart/index.html"},
+      {title:"motoroadrash3d",platform:"Linux",genre:"Action",path:"games/motoroadrash3d/index.html"},
+      {title:"motox3m",platform:"Windows",genre:"Action",path:"games/motox3m/index.html"},
+      {title:"ninjavsevilcorp",platform:"Linux",genre:"Action",path:"games/ninjavsevilcorp/index.html"},
+      {title:"omnombo",platform:"Windows",genre:"Action",path:"games/omnombo/index.html"},
+      {title:"packabunchas",platform:"Linux",genre:"Puzzle",path:"games/packabunchas/index.html"},
+      {title:"pacman",platform:"Windows",genre:"Action",path:"games/pacman/index.html"},
+      {title:"paperio",platform:"Linux",genre:"Action",path:"games/paperio/index.html"},
+      {title:"particleclicker",platform:"Windows",genre:"Action",path:"games/particleclicker/index.html"},
+      {title:"pushback",platform:"Linux",genre:"Action",path:"games/pushback/index.html"},
+      {title:"q1k3",platform:"Windows",genre:"Action",path:"games/q1k3/index.html"},
+      {title:"racer",platform:"Linux",genre:"Action",path:"games/racer/index.html"},
+      {title:"radiusraid",platform:"Windows",genre:"Action",path:"games/radiusraid/index.html"},
+      {title:"redball4",platform:"Linux",genre:"Action",path:"games/redball4/index.html"},
+      {title:"retrobowl",platform:"Windows",genre:"Action",path:"games/retrobowl/index.html"},
+      {title:"retrohaunt",platform:"Linux",genre:"Horror",path:"games/retrohaunt/index.html"},
+      {title:"riddleschool2",platform:"Windows",genre:"Puzzle",path:"games/riddleschool2/index.html"},
+      {title:"ritz",platform:"Linux",genre:"Puzzle",path:"games/ritz/index.html"},
+      {title:"roadblocks",platform:"Windows",genre:"Action",path:"games/roadblocks/index.html"},
+      {title:"scrapmetal3",platform:"Windows",genre:"Action",path:"games/scrapmetal3/index.html"},
+      {title:"shuttledeck",platform:"Linux",genre:"Puzzle",path:"games/shuttledeck/index.html"},
+      {title:"sketchbook04",platform:"Windows",genre:"Puzzle",path:"games/sketchbook04/index.html"},
+      {title:"sleepingbeauty",platform:"Linux",genre:"RPG",path:"games/sleepingbeauty/index.html"},
+      {title:"slope",platform:"Linux",genre:"Action",path:"games/slope/index.html"},
+      {title:"slope2",platform:"Windows",genre:"Action",path:"games/slope2/index.html"},
+      {title:"snake",platform:"Linux",genre:"Puzzle",path:"games/snake/index.html"},
+      {title:"snowbattle",platform:"Windows",genre:"Action",path:"games/snowbattle/index.html"},
+      {title:"solitaire",platform:"Windows",genre:"Puzzle",path:"games/solitaire/index.html"},
+      {title:"spacecompany",platform:"Linux",genre:"RPG",path:"games/spacecompany/index.html"},
+      {title:"spacegarden",platform:"Windows",genre:"RPG",path:"games/spacegarden/index.html"},
+      {title:"spacehuggers",platform:"Linux",genre:"Action",path:"games/spacehuggers/index.html"},
+      {title:"spaceinvaders",platform:"Windows",genre:"Action",path:"games/spaceinvaders/index.html"},
+      {title:"stack",platform:"Linux",genre:"Puzzle",path:"games/stack/index.html"},
+      {title:"stackball",platform:"Windows",genre:"Action",path:"games/stackball/index.html"},
+      {title:"stickmanhook",platform:"Windows",genre:"Action",path:"games/stickmanhook/index.html"},
+      {title:"stickmansurvival",platform:"Linux",genre:"Action",path:"games/stickmansurvival/index.html"},
+      {title:"subwaysurfersny",platform:"Linux",genre:"Action",path:"games/subwaysurfersny/index.html"},
+      {title:"subwaysurferssingapore",platform:"Windows",genre:"Action",path:"games/subwaysurferssingapore/index.html"},
+      {title:"tanukisunset",platform:"Linux",genre:"Action",path:"games/tanukisunset/index.html"},
+      {title:"tetris",platform:"Windows",genre:"Puzzle",path:"games/tetris/index.html"},
+      {title:"themazeofspacegoblins",platform:"Linux",genre:"Action",path:"games/themazeofspacegoblins/index.html"},
+      {title:"tinyfishing",platform:"Linux",genre:"RPG",path:"games/tinyfishing/index.html"},
+      {title:"tombofthmask",platform:"Windows",genre:"Action",path:"games/tombofthmask/index.html"},
+      {title:"topspeedracing3d",platform:"Linux",genre:"Action",path:"games/topspeedracing3d/index.html"},
+      {title:"towermaster",platform:"Windows",genre:"Puzzle",path:"games/towermaster/index.html"},
+      {title:"trimps",platform:"Linux",genre:"RPG",path:"games/trimps/index.html"},
+      {title:"tunnelrush",platform:"Windows",genre:"Action",path:"games/tunnelrush/index.html"},
+      {title:"vex4",platform:"Linux",genre:"Action",path:"games/vex4/index.html"},
+      {title:"vex5",platform:"Windows",genre:"Action",path:"games/vex5/index.html"},
+      {title:"vex6",platform:"Linux",genre:"Action",path:"games/vex6/index.html"},
+      {title:"webecomewhatwebehold",platform:"Windows",genre:"Puzzle",path:"games/webecomewhatwebehold/index.html"},
+      {title:"worldshardestgame2",platform:"Linux",genre:"Puzzle",path:"games/worldshardestgame2/index.html"},
+      {title:"xx142b2exe",platform:"Windows",genre:"Action",path:"games/xx142b2exe/index.html"},
+      {title:"zombsroyale",platform:"Linux",genre:"Action",path:"games/zombsroyale/index.html"}
+    ];
     let currentPage = 1;
     const gamesPerPage = 16;
     let filteredGames = [...games];
 
-    // Load favorites from localStorage with error handling
+    // Load favorites from localStorage
     let favorites = [];
     try {
       const storedFavorites = localStorage.getItem('favorites');
@@ -856,9 +1070,6 @@
       if (particleInterval) clearInterval(particleInterval);
     }
 
-    // Start animations
-    startParticles();
-
     // Handle visibility changes
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
@@ -868,7 +1079,7 @@
       }
     });
 
-    // Initial render
+    // Initial render (only if not banned, handled in load event)
     renderGames();
   </script>
   <script src="tracking.js"></script>
