@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - zri.info</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
     <style>
         * {
             margin: 0;
@@ -132,6 +136,24 @@
             color: #ff6666;
         }
 
+        /* Ban Message Input Styles */
+        .ban-message-input {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            background: #1f1f1f;
+            color: #fff;
+            width: 100%;
+            max-width: 200px;
+            margin-right: 0.5rem;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .ban-message-input:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(162, 89, 255, 0.5);
+        }
+
         @media (max-width: 768px) {
             .admin-container {
                 padding: 1.5rem;
@@ -150,6 +172,9 @@
             .login-section input {
                 max-width: 250px;
             }
+            .ban-message-input {
+                max-width: 150px;
+            }
         }
     </style>
 </head>
@@ -157,16 +182,16 @@
     <div class="admin-container">
         <h1>Admin Panel</h1>
         <div class="login-section" id="loginSection">
-            <input type="password" id="adminPassword" placeholder="Enter admin password">
+            <input type="password" id.joipassword" placeholder="Enter admin password">
             <div class="error-message" id="loginError"></div>
             <button onclick="login()">Login</button>
         </div>
         <div class="admin-content" id="adminContent" style="display: none;">
-            <h2>Online Users</h2>
+            <h2>Users</h2>
             <table class="user-table" id="userTable">
                 <thead>
                     <tr>
-                        <th>Device ID</th>
+                        <th>Username</th>
                         <th>Status</th>
                         <th>Last Active</th>
                         <th>Action</th>
@@ -179,78 +204,35 @@
     </div>
 
     <script>
-        // Simple UUID generator for device IDs
-        function generateUUID() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEGM-Ij8BN8a0hL4bUoU4WEbBy8_gPlKM",
+            authDomain: "zriinfo-f83b7.firebaseapp.com",
+            projectId: "zriinfo-f83b7",
+            storageBucket: "zriinfo-f83b7.firebasestorage.app",
+            messagingSenderId: "582674719038",
+            appId: "1:582674719038:web:5d326ad45a757b6555cc6f",
+            measurementId: "G-2QF2NTJXCN"
+        };
 
-        // Set or get device ID via cookie
-        function getDeviceId() {
-            const name = 'deviceId=';
-            const decodedCookie = decodeURIComponent(document.cookie);
-            const cookieArray = decodedCookie.split(';');
-            for (let cookie of cookieArray) {
-                cookie = cookie.trim();
-                if (cookie.indexOf(name) === 0) {
-                    return cookie.substring(name.length, cookie.length);
-                }
-            }
-            const newId = generateUUID();
-            document.cookie = `deviceId=${newId};path=/;max-age=31536000`; // 1 year expiry
-            return newId;
-        }
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        // Simulated backend storage with localStorage (replace with actual server in production)
-        function getUsers() {
-            try {
-                const users = localStorage.getItem('users');
-                return users ? JSON.parse(users) : {};
-            } catch (error) {
-                console.error('Error loading users:', error);
-                return {};
-            }
-        }
-
-        function saveUsers(users) {
-            try {
-                localStorage.setItem('users', JSON.stringify(users));
-            } catch (error) {
-                console.error('Error saving users:', error);
-            }
-        }
-
-        // Update user activity
-        function updateUserActivity() {
-            const deviceId = getDeviceId();
-            const users = getUsers();
-            users[deviceId] = {
-                lastActive: new Date().toISOString(),
-                banned: users[deviceId]?.banned || false
-            };
-            saveUsers(users);
-
-            // Notify server of activity (simulated)
-            console.log(`User ${deviceId} is active`);
-        }
-
-        // Check if user is banned
-        function isBanned() {
-            const deviceId = getDeviceId();
-            const users = getUsers();
-            return users[deviceId]?.banned || false;
-        }
+        // Elements
+        const loginSection = document.getElementById('loginSection');
+        const adminContent = document.getElementById('adminContent');
+        const userTableBody = document.getElementById('userTableBody');
+        const adminPassword = document.getElementById('adminPassword');
+        const loginError = document.getElementById('loginError');
 
         // Password-based login
-        const ADMIN_PASSWORD = 'stroodledingus'; // Hardcoded for simplicity; use secure method in production
+        const ADMIN_PASSWORD = 'stroodledingus'; // Hardcoded for simplicity; secure this in production
         function login() {
-            const password = document.getElementById('adminPassword').value;
-            const loginError = document.getElementById('loginError');
+            const password = adminPassword.value;
             if (password === ADMIN_PASSWORD) {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('adminContent').style.display = 'block';
+                loginSection.style.display = 'none';
+                adminContent.style.display = 'block';
                 renderUsers();
                 console.log('Access granted. Admin panel unlocked.');
             } else {
@@ -260,67 +242,84 @@
         }
 
         function logout() {
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('loginError').textContent = '';
-            document.getElementById('loginSection').style.display = 'flex';
-            document.getElementById('adminContent').style.display = 'none';
-            document.getElementById('userTableBody').innerHTML = '';
+            adminPassword.value = '';
+            loginError.textContent = '';
+            loginSection.style.display = 'flex';
+            adminContent.style.display = 'none';
+            userTableBody.innerHTML = '';
         }
 
-        // Render online users
+        // Render users from Firestore
         function renderUsers() {
-            const userTableBody = document.getElementById('userTableBody');
-            const users = getUsers();
             userTableBody.innerHTML = '';
-
-            // Consider users active within the last 5 minutes as online
             const now = new Date();
             const onlineThreshold = 5 * 60 * 1000; // 5 minutes in ms
 
-            for (const [deviceId, data] of Object.entries(users)) {
-                const lastActive = new Date(data.lastActive);
-                const isOnline = (now - lastActive) < onlineThreshold;
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${deviceId}</td>
-                    <td class="${data.banned ? 'banned' : ''}">${isOnline ? 'Online' : 'Offline'}${data.banned ? ' (Banned)' : ''}</td>
-                    <td>${lastActive.toLocaleString()}</td>
-                    <td>
-                        <button onclick="toggleBan('${deviceId}', this)">
-                            ${data.banned ? 'Unban' : 'Ban'}
-                        </button>
-                    </td>
-                `;
-                userTableBody.appendChild(row);
-            }
+            db.collection('users').get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    const userId = doc.id;
+                    const lastActive = new Date(userData.lastActive);
+                    const isOnline = (now - lastActive) < onlineThreshold;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${userData.username}</td>
+                        <td class="${userData.banned ? 'banned' : ''}">
+                            ${isOnline ? 'Online' : 'Offline'}${userData.banned ? ' (Banned)' : ''}
+                        </td>
+                        <td>${lastActive.toLocaleString()}</td>
+                        <td>
+                            <input type="text" class="ban-message-input" id="banMessage-${userId}" placeholder="Ban message" value="${userData.banMessage || ''}">
+                            <button onclick="toggleBan('${userId}', this)">
+                                ${userData.banned ? 'Unban' : 'Ban'}
+                            </button>
+                        </td>
+                    `;
+                    userTableBody.appendChild(row);
+                });
+            }).catch((error) => {
+                console.error('Error fetching users:', error);
+                loginError.textContent = 'Error loading users. Please try again.';
+            });
         }
 
-        // Toggle ban status
-        function toggleBan(deviceId, button) {
-            const users = getUsers();
-            if (users[deviceId]) {
-                users[deviceId].banned = !users[deviceId].banned;
-                saveUsers(users);
-                button.textContent = users[deviceId].banned ? 'Unban' : 'Ban';
-                renderUsers();
-            }
-        }
+        // Toggle ban status and update ban message
+        function toggleBan(userId, button) {
+            const userDocRef = db.collection('users').doc(userId);
+            const banMessageInput = document.getElementById(`banMessage-${userId}`);
+            const banMessage = banMessageInput.value.trim();
 
-        // Periodically update user activity
-        updateUserActivity();
-        setInterval(updateUserActivity, 30000); // Update every 30 seconds
+            userDocRef.get().then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    const newBanStatus = !userData.banned;
+                    userDocRef.update({
+                        banned: newBanStatus,
+                        banMessage: newBanStatus ? banMessage : ''
+                    }).then(() => {
+                        button.textContent = newBanStatus ? 'Unban' : 'Ban';
+                        if (!newBanStatus) {
+                            banMessageInput.value = '';
+                        }
+                        renderUsers();
+                    }).catch((error) => {
+                        console.error('Error updating ban status:', error);
+                        loginError.textContent = 'Error updating ban status. Please try again.';
+                    });
+                }
+            }).catch((error) => {
+                console.error('Error fetching user data:', error);
+                loginError.textContent = 'Error fetching user data. Please try again.';
+            });
+        }
 
         // Periodically refresh user list if admin is logged in
         setInterval(() => {
-            if (document.getElementById('adminContent').style.display === 'block') {
+            if (adminContent.style.display === 'block') {
                 renderUsers();
             }
         }, 10000); // Refresh every 10 seconds
-
-        // Check if user is banned on page load
-        if (isBanned()) {
-            document.body.innerHTML = '<h1 style="color: #ff6666; text-align: center; margin-top: 20%;">You have been banned from zri.info</h1>';
-        }
     </script>
 </body>
 </html>
