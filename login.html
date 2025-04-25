@@ -5,21 +5,7 @@
   <title>Login | zri.info</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js" onerror="loadLocalBcrypt()"></script>
-  <script>
-    function loadLocalBcrypt() {
-      console.log("DEBUG: CDN for bcrypt.min.js failed, attempting to load local copy...");
-      const localScript = document.createElement('script');
-      localScript.src = '/js/bcrypt.min.js'; // Adjust path based on your project structure
-      localScript.onerror = () => {
-        console.error("DEBUG: Local bcrypt.min.js failed to load. Ensure file exists at /js/bcrypt.min.js.");
-      };
-      localScript.onload = () => {
-        console.log("DEBUG: Local bcrypt.min.js loaded successfully.");
-      };
-      document.head.appendChild(localScript);
-    }
-  </script>
+  <script src="/js/bcrypt.min.js" onerror="console.error('DEBUG: Failed to load /js/bcrypt.min.js. Ensure file exists at C:\\Users\\poopy\\Desktop\\zri.info\\js\\bcrypt.min.js and server serves it correctly.');" onload="console.log('DEBUG: /js/bcrypt.min.js loaded successfully.');"></script>
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -128,6 +114,20 @@
       console.error("Firebase initialization error:", error);
     }
 
+    // Additional check for bcrypt.min.js availability
+    fetch('/js/bcrypt.min.js')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP status ${response.status}: ${response.statusText}`);
+        }
+        console.log("DEBUG: Fetch confirmed /js/bcrypt.min.js is accessible.");
+        return response.text();
+      })
+      .catch(error => {
+        console.error(`DEBUG: Fetch failed for /js/bcrypt.min.js: ${error.message}`);
+        showDebug(`Failed to fetch /js/bcrypt.min.js: ${error.message}. Check server configuration.`);
+      });
+
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const errorMsg = document.getElementById('errorMsg');
@@ -139,8 +139,8 @@
     console.log("DEBUG: Checking if bcrypt is defined...");
     if (typeof bcrypt === 'undefined') {
       showError("Password encryption library failed to load.");
-      showDebug("Bcrypt not defined. Check CDN or local file at /js/bcrypt.min.js.");
-      console.error("DEBUG: bcrypt is not defined. Ensure the bcryptjs script loaded correctly.");
+      showDebug("Bcrypt not defined. Ensure /js/bcrypt.min.js exists at C:\\Users\\poopy\\Desktop\\zri.info\\js\\bcrypt.min.js and is served correctly.");
+      console.error("DEBUG: bcrypt is not defined. Ensure /js/bcrypt.min.js loaded correctly.");
     } else {
       console.log("DEBUG: bcrypt is defined and ready.");
     }

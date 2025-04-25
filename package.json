@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "bcryptjs": "^3.0.2",
+    "bcryptjs": "^2.4.3",
     "firebase": "^11.6.1"
   }
 }
