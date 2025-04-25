@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | zri.info</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js" onerror="loadLocalBcrypt()"></script>
+  <script>
+    function loadLocalBcrypt() {
+      console.log("DEBUG: CDN for bcrypt.min.js failed, attempting to load local copy...");
+      const localScript = document.createElement('script');
+      localScript.src = '/js/bcrypt.min.js'; // Adjust path based on your project structure
+      localScript.onerror = () => {
+        console.error("DEBUG: Local bcrypt.min.js failed to load. Ensure file exists at /js/bcrypt.min.js.");
+      };
+      localScript.onload = () => {
+        console.log("DEBUG: Local bcrypt.min.js loaded successfully.");
+      };
+      document.head.appendChild(localScript);
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: rgba(26, 26, 26, 0.8);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      max-width: 350px;
+      width: 100%;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background: #1f1f1f;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #a259ff 0%, #c084fc 100%);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #c084fc 0%, #a259ff 100%);
+    }
+
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+
+    .error {
+      color: #ff6666;
+      margin: 10px 0;
+    }
+
+    .debug {
+      color: #ffcc00;
+      margin: 10px 0;
+      font-size: 0.8em;
+      background: rgba(50, 50, 50, 0.5);
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+      max-height: 100px;
+      overflow-y: auto;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login / Register</h2>
+    <input type="text" id="username" placeholder="Username" maxlength="20">
+    <input type="password" id="password" placeholder="Password">
+    <div class="error" id="errorMsg"></div>
+    <div class="debug" id="debugMsg"></div>
+    <button id="registerButton">Register</button>
+    <button id="loginButton">Login</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCl2cCHc-sQk-wmaT-RmwQ7hixIeT7sjNc",
+      authDomain: "zri-info-40027.firebaseapp.com",
+      projectId: "zri-info-40027",
+      storageBucket: "zri-info-40027.appspot.com",
+      messagingSenderId: "802389654666",
+      appId: "1:802389654666:web:e2229db3f723eddd888173"
+    };
+
+    // Initialize Firebase
+    let db;
+    try {
+      console.log("DEBUG: Initializing Firebase...");
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      console.log("DEBUG: Firebase initialized successfully.");
+    } catch (error) {
+      showError("Failed to initialize Firebase.");
+      showDebug(`Firebase init error: ${error.message}\nStack: ${error.stack}`);
+      console.error("Firebase initialization error:", error);
+    }
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const errorMsg = document.getElementById('errorMsg');
+    const debugMsg = document.getElementById('debugMsg');
+    const registerButton = document.getElementById('registerButton');
+    const loginButton = document.getElementById('loginButton');
+
+    // Check if bcrypt is loaded
+    console.log("DEBUG: Checking if bcrypt is defined...");
+    if (typeof bcrypt === 'undefined') {
+      showError("Password encryption library failed to load.");
+      showDebug("Bcrypt not defined. Check CDN or local file at /js/bcrypt.min.js.");
+      console.error("DEBUG: bcrypt is not defined. Ensure the bcryptjs script loaded correctly.");
+    } else {
+      console.log("DEBUG: bcrypt is defined and ready.");
+    }
+
+    // Promisify bcrypt.hash
+    function hashPassword(password) {
+      console.log("DEBUG: Hashing password...");
+      if (typeof bcrypt === 'undefined') {
+        throw new Error("bcrypt is not defined. Library failed to load.");
+      }
+      return new Promise((resolve, reject) => {
+        bcrypt.hash(password, 10, (err, hash) => {
+          if (err) {
+            console.error("DEBUG: Password hashing failed:", err);
+            reject(err);
+          } else {
+            console.log("DEBUG: Password hashed successfully.");
+            resolve(hash);
+          }
+        });
+      });
+    }
+
+    // Promisify bcrypt.compare
+    function comparePassword(password, hash) {
+      console.log("DEBUG: Comparing password...");
+      if (typeof bcrypt === 'undefined') {
+        throw new Error("bcrypt is not defined. Library failed to load.");
+      }
+      return new Promise((resolve, reject) => {
+        bcrypt.compare(password, hash, (err, result) => {
+          if (err) {
+            console.error("DEBUG: Password comparison failed:", err);
+            reject(err);
+          } else {
+            console.log("DEBUG: Password comparison completed.");
+            resolve(result);
+          }
+        });
+      });
+    }
+
+    async function getUsers() {
+      console.log("DEBUG: Fetching users from Firestore...");
+      try {
+        const snapshot = await getDocs(collection(db, 'users'));
+        const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log(`DEBUG: Fetched ${users.length} users.`);
+        return users;
+      } catch (error) {
+        console.error("DEBUG: Error fetching users:", error);
+        showDebug(`User fetch error: ${error.message}\nStack: ${error.stack}`);
+        throw new Error("Failed to fetch users.");
+      }
+    }
+
+    async function register() {
+      console.log("DEBUG: Register function started.");
+      console.log(`DEBUG: Button states - Register: ${registerButton.disabled}, Login: ${loginButton.disabled}`);
+      registerButton.disabled = true;
+      loginButton.disabled = true;
+      registerButton.textContent = "Registering...";
+      errorMsg.textContent = "";
+      debugMsg.style.display = 'none';
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+      console.log(`DEBUG: Input - Username: ${username}, Password length: ${password.length}`);
+
+      if (!username || !password) {
+        showError("Please enter both username and password.");
+        showDebug("Validation failed: Missing username or password.");
+        resetButtons();
+        return;
+      }
+      if (username.length < 3 || username.length > 20) {
+        showError("Username must be between 3 and 20 characters.");
+        showDebug("Validation failed: Username length invalid.");
+        resetButtons();
+        return;
+      }
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        showError("Username can only contain letters, numbers, and underscores.");
+        showDebug("Validation failed: Username invalid characters.");
+        resetButtons();
+        return;
+      }
+      if (password.length < 6) {
+        showError("Password must be at least 6 characters.");
+        showDebug("Validation failed: Password too short.");
+        resetButtons();
+        return;
+      }
+
+      try {
+        console.log("DEBUG: Checking for existing username...");
+        const users = await getUsers();
+        if (users.some(u => u.username === username)) {
+          showError("Username is already taken.");
+          showDebug("Validation failed: Username already exists.");
+          resetButtons();
+          return;
+        }
+
+        console.log("DEBUG: Generating user ID...");
+        const uid = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+        console.log(`DEBUG: Generated UID: ${uid}`);
+
+        let hashed;
+        try {
+          hashed = await hashPassword(password);
+        } catch (error) {
+          showError("Error processing password.");
+          showDebug(`Password hash error: ${error.message}\nStack: ${error.stack}`);
+          console.error("DEBUG: Password hashing error:", error);
+          resetButtons();
+          return;
+        }
+
+        console.log("DEBUG: Writing user data to Firestore...");
+        try {
+          await setDoc(doc(db, "users", uid), {
+            uid,
+            username,
+            password: hashed,
+            banned: false,
+            banMessage: '',
+            lastActive: new Date().toISOString()
+          });
+          console.log("DEBUG: User data written successfully.");
+        } catch (error) {
+          showError("Failed to register. Check Firestore rules or network.");
+          showDebug(`Firestore write error: ${error.message}\nStack: ${error.stack}\nCheck Firestore rules at https://console.firebase.google.com/project/${firebaseConfig.projectId}/firestore/rules`);
+          console.error("DEBUG: Firestore write error:", error);
+          resetButtons();
+          return;
+        }
+
+        console.log("DEBUG: Setting localStorage and redirecting...");
+        localStorage.setItem("currentUserId", uid);
+        window.location.href = "index.html";
+      } catch (error) {
+        showError("Failed to register. Try again.");
+        showDebug(`Registration error: ${error.message}\nStack: ${error.stack}`);
+        console.error("DEBUG: General registration error:", error);
+        resetButtons();
+      }
+    }
+
+    async function login() {
+      console.log("DEBUG: Login function started.");
+      registerButton.disabled = true;
+      loginButton.disabled = true;
+      loginButton.textContent = "Logging in...";
+      errorMsg.textContent = "";
+      debugMsg.style.display = 'none';
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        showError("Please enter both username and password.");
+        showDebug("Validation failed: Missing username or password.");
+        resetButtons();
+        return;
+      }
+
+      try {
+        const users = await getUsers();
+        const user = users.find(u => u.username === username);
+        if (!user) {
+          showError("Username not found.");
+          showDebug("Validation failed: Username not found.");
+          resetButtons();
+          return;
+        }
+
+        let passwordMatch;
+        try {
+          passwordMatch = await comparePassword(password, user.password);
+        } catch (error) {
+          showError("Error during login.");
+          showDebug(`Password compare error: ${error.message}\nStack: ${error.stack}`);
+          console.error("DEBUG: Password comparison error:", error);
+          resetButtons();
+          return;
+        }
+
+        if (!passwordMatch) {
+          showError("Incorrect password.");
+          showDebug("Validation failed: Password mismatch.");
+          resetButtons();
+          return;
+        }
+
+        if (user.banned) {
+          showError(user.banMessage || "You have been banned from zri.info.");
+          showDebug("Validation failed: User is banned.");
+          resetButtons();
+          return;
+        }
+
+        localStorage.setItem("currentUserId", user.uid);
+        window.location.href = "index.html";
+      } catch (error) {
+        showError("Failed to login. Try again.");
+        showDebug(`Login error: ${error.message}\nStack: ${error.stack}`);
+        console.error("Login error:", error);
+        resetButtons();
+      }
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+    }
+
+    function showDebug(msg) {
+      debugMsg.textContent = msg;
+      debugMsg.style.display = 'block';
+    }
+
+    function resetButtons() {
+      registerButton.disabled = false;
+      loginButton.disabled = false;
+      registerButton.textContent = "Register";
+      loginButton.textContent = "Login";
+      console.log("DEBUG: Buttons reset.");
+    }
+
+    // Event listeners
+    registerButton.addEventListener('click', () => {
+      console.log("DEBUG: Register button clicked.");
+      register();
+    });
+    loginButton.addEventListener('click', () => {
+      console.log("DEBUG: Login button clicked.");
+      login();
+    });
+
+    // Handle Enter key
+    usernameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        console.log("DEBUG: Enter key pressed in username input.");
+        login();
+      }
+    });
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        console.log("DEBUG: Enter key pressed in password input.");
+        login();
+      }
+    });
+
+    // Log network status
+    console.log(`DEBUG: Online status: ${navigator.onLine}`);
+    window.addEventListener('online', () => console.log("DEBUG: Network online."));
+    window.addEventListener('offline', () => console.log("DEBUG: Network offline."));
+  </script>
+</body>
+</html>

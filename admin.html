@@ -17,22 +17,120 @@
             background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
             min-height: 100vh;
             color: #ffffff;
+            line-height: 1.5;
+            position: relative;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem;
+            justify-content: center;
         }
 
-        .admin-container {
-            max-width: 800px;
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #a259ff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(162, 89, 255, 1), 0 0 25px rgba(162, 89, 255, 0.8);
+            animation: shoot 4s linear infinite, twinkle 1.5s ease-in-out infinite;
+        }
+
+        .star::before {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(162, 89, 255, 0.9));
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(0) translateY(0); opacity: 1; }
+            100% { transform: translateX(-130vw) translateY(90vh); opacity: 0.2; }
+        }
+
+        @keyframes twinkle {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.7); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .wave-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(162, 89, 255, 0.8)" fill-opacity="1" d="M0,128C48,112,96,96,144,96C192,96,240,112,288,128C336,144,384,160,432,160C480,160,528,144,576,128C624,112,672,96,720,96C768,96,816,112,864,128C912,144,960,160,1008,160C1056,160,1104,144,1152,128C1200,112,1248,96,1296,96C1344,96,1392,112,1440,128L1440,320L0,320Z"></path></svg>') repeat-x;
+            background-size: 50% 100%;
+            animation: waveMove 15s ease-in-out infinite, waveFloat 5s ease-in-out infinite;
+            opacity: 0.8;
+            filter: drop-shadow(0 -2px 6px rgba(162, 89, 255, 0.5));
+        }
+
+        .wave:nth-child(2) {
+            animation: waveMove 18s ease-in-out infinite reverse, waveFloat 6s ease-in-out infinite;
+            opacity: 0.6;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(120, 50, 200, 0.7)" fill-opacity="1" d="M0,160C48,144,96,128,144,128C192,128,240,144,288,160C336,176,384,192,432,192C480,192,528,176,576,160C624,144,672,128,720,128C768,128,816,144,864,160C912,176,960,192,1008,192C1056,192,1104,176,1152,160C1200,144,1248,128,1296,128C1344,128,1392,144,1440,160L1440,320L0,320Z"></path></svg>') repeat-x;
+            filter: drop-shadow(0 -2px 5px rgba(120, 50, 200, 0.4));
+        }
+
+        .wave:nth-child(3) {
+            animation: waveMove 12s ease-in-out infinite, waveFloat 4s ease-in-out infinite;
+            opacity: 0.4;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(80, 30, 150, 0.6)" fill-opacity="1" d="M0,192C48,176,96,160,144,160C192,160,240,176,288,192C336,208,384,224,432,224C480,224,528,208,576,192C624,176,672,160,720,160C768,160,816,176,864,192C912,208,960,224,1008,224C1056,224,1104,208,1152,192C1200,176,1248,160,1296,160C1344,160,1392,176,1440,192L1440,320L0,320Z"></path></svg>') repeat-x;
+            filter: drop-shadow(0 -2px 4px rgba(80, 30, 150, 0.3));
+        }
+
+        @keyframes waveMove {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-25%); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes waveFloat {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        .content-wrapper {
+            max-width: 800px;
+            padding: 50px;
+            border-radius: 20px;
             background: rgba(26, 26, 26, 0.2);
             backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 2rem;
+            -webkit-backdrop-filter: blur(10px);
             border: 2px solid rgba(162, 89, 255, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            animation: borderGlow 5s linear infinite;
+            animation: popIn 1s ease forwards, borderGlow 5s linear infinite, pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         @keyframes borderGlow {
@@ -41,18 +139,63 @@
             100% { border-color: rgba(162, 89, 255, 0.3); }
         }
 
-        h1 {
-            font-size: 2.5rem;
-            color: #a259ff;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(162, 89, 255, 0.3); }
+            50% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 25px rgba(162, 89, 255, 0.5); }
+            100% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(162, 89, 255, 0.3); }
         }
 
-        .login-section, .admin-content {
+        h1 {
+            font-size: 3.5em;
+            color: #a259ff;
+            margin: 20px 0;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #a259ff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.2s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-section {
             display: flex;
             flex-direction: column;
             align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.4s;
+        }
+
+        .admin-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .admin-content.visible {
+            display: flex;
+            opacity: 1;
         }
 
         .login-section input {
@@ -64,8 +207,8 @@
             width: 100%;
             max-width: 300px;
             margin-bottom: 1rem;
-            transition: box-shadow 0.3s;
             font-family: 'Roboto', sans-serif;
+            transition: box-shadow 0.3s;
         }
 
         .login-section input:focus {
@@ -82,6 +225,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            margin: 0.5rem;
             box-shadow: 0 2px 10px rgba(162, 89, 255, 0.4);
         }
 
@@ -91,20 +235,34 @@
             box-shadow: 0 2px 15px rgba(162, 89, 255, 0.6);
         }
 
+        .login-section button:disabled, .admin-content button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .error-message {
-            color: #ff6666;
+            color: #ff9999;
             margin-bottom: 1rem;
             text-align: center;
             font-size: 0.9rem;
+            padding: 0.5rem;
+            width: 100%;
+            max-width: 300px;
         }
 
         .user-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 2rem;
-            background: rgba(50, 50, 50, 0.3);
+            background: rgba(50, 50, 50, 0.5);
             border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.6s;
         }
 
         .user-table th, .user-table td {
@@ -132,7 +290,6 @@
             color: #ff6666;
         }
 
-        /* Ban Message Input Styles */
         .ban-message-input {
             padding: 0.5rem;
             border: none;
@@ -143,6 +300,7 @@
             max-width: 200px;
             margin-right: 0.5rem;
             font-family: 'Roboto', sans-serif;
+            transition: box-shadow 0.3s;
         }
 
         .ban-message-input:focus {
@@ -151,11 +309,14 @@
         }
 
         @media (max-width: 768px) {
-            .admin-container {
-                padding: 1.5rem;
+            .content-wrapper {
+                padding: 30px;
             }
             h1 {
-                font-size: 2rem;
+                font-size: 2.5em;
+            }
+            h2 {
+                font-size: 1.5em;
             }
             .user-table th, .user-table td {
                 padding: 0.8rem;
@@ -172,85 +333,187 @@
                 max-width: 150px;
             }
         }
+
+        .global-error {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6666;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            z-index: 2000;
+            display: none;
+            text-align: center;
+            max-width: 80%;
+        }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <h1>Admin Panel</h1>
-        <div class="login-section" id="loginSection">
-            <input type="password" id="adminPassword" placeholder="Enter admin password">
-            <div class="error-message" id="loginError"></div>
-            <button onclick="login()">Login</button>
+    <div class="main-content" id="mainContent">
+        <div class="stars"></div>
+        <div class="wave-container">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
         </div>
-        <div class="admin-content" id="adminContent" style="display: none;">
-            <h2>Users</h2>
-            <table class="user-table" id="userTable">
-                <thead>
-                    <tr>
-                        <th>Username</th>
-                        <th>Status</th>
-                        <th>Last Active</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody"></tbody>
-            </table>
-            <button onclick="logout()" style="margin-top: 2rem;">Logout</button>
+
+        <div class="content-wrapper">
+            <h1>Admin Panel</h1>
+            <div class="login-section" id="loginSection">
+                <input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="off">
+                <div class="error-message" id="loginError"></div>
+                <button id="loginButton">Login</button>
+            </div>
+            <div class="admin-content" id="adminContent">
+                <h2>Users</h2>
+                <table class="user-table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Status</th>
+                            <th>Last Active</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody"></tbody>
+                </table>
+                <button id="logoutButton" style="margin-top: 2rem;">Logout</button>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Elements
+    <div class="global-error" id="globalError"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCl2cCHc-sQk-wmaT-RmwQ7hixIeT7sjNc",
+            authDomain: "zri-info-40027.firebaseapp.com",
+            projectId: "zri-info-40027",
+            storageBucket: "zri-info-40027.firebasestorage.app",
+            messagingSenderId: "802389654666",
+            appId: "1:802389654666:web:e2229db3f723eddd888173",
+            measurementId: "G-QQTJ31LX4E"
+        };
+
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+        } catch (error) {
+            showGlobalError('Failed to initialize Firebase. Check configuration or network.');
+            console.error('Firebase initialization error:', error);
+        }
+
+        const mainContent = document.getElementById('mainContent');
         const loginSection = document.getElementById('loginSection');
         const adminContent = document.getElementById('adminContent');
         const userTableBody = document.getElementById('userTableBody');
         const adminPassword = document.getElementById('adminPassword');
         const loginError = document.getElementById('loginError');
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
 
-        // Local Storage Helper Functions
-        function getLocalStorageItem(key, defaultValue) {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : defaultValue;
+        if (loginButton) loginButton.addEventListener('click', login);
+        if (logoutButton) logoutButton.addEventListener('click', logout);
+        if (adminPassword) {
+            adminPassword.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') login();
+            });
         }
 
-        function setLocalStorageItem(key, value) {
-            localStorage.setItem(key, JSON.stringify(value));
-        }
-
-        // Password-based login
-        const ADMIN_PASSWORD = 'stroodledingus'; // Hardcoded for simplicity; secure this in production
-        function login() {
-            const password = adminPassword.value;
-            if (password === ADMIN_PASSWORD) {
-                loginSection.style.display = 'none';
-                adminContent.style.display = 'block';
-                renderUsers();
-                console.log('Access granted. Admin panel unlocked.');
-            } else {
-                loginError.textContent = 'Incorrect password. Access denied.';
-                console.error('Incorrect password. Access denied.');
+        function showGlobalError(message) {
+            const globalError = document.getElementById('globalError');
+            if (globalError) {
+                globalError.textContent = message;
+                globalError.style.display = 'block';
+                console.error('Error:', message);
+                setTimeout(() => {
+                    globalError.style.display = 'none';
+                }, 5000);
             }
         }
 
+        const ADMIN_PASSWORD = 'stroodledingus';
+        async function login() {
+            if (!adminPassword || !loginError || !loginSection || !adminContent || !mainContent) {
+                showGlobalError('Page not properly loaded. Please refresh.');
+                return;
+            }
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
+            const password = adminPassword.value.trim();
+            if (password === ADMIN_PASSWORD) {
+                loginSection.style.display = 'none';
+                adminContent.style.display = 'flex';
+                adminContent.classList.add('visible');
+                await renderUsers();
+                startAnimations();
+                loginError.textContent = '';
+            } else {
+                loginError.textContent = 'Incorrect password. Access denied.';
+                console.error('Incorrect admin password entered.');
+            }
+            loginButton.disabled = false;
+            loginButton.textContent = 'Login';
+        }
+
         function logout() {
+            if (!adminPassword || !loginError || !loginSection || !adminContent || !userTableBody || !mainContent) {
+                showGlobalError('Page not properly loaded. Please refresh.');
+                return;
+            }
             adminPassword.value = '';
             loginError.textContent = '';
             loginSection.style.display = 'flex';
             adminContent.style.display = 'none';
+            adminContent.classList.remove('visible');
             userTableBody.innerHTML = '';
+            stopAnimations();
         }
 
-        // Render users from local storage
-        function renderUsers() {
+        async function getUsers() {
+            if (!db) {
+                showGlobalError('Database not initialized.');
+                return [];
+            }
+            try {
+                const snapshot = await getDocs(collection(db, 'users'));
+                return snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        uid: data.uid || doc.id,
+                        username: data.username || 'Unknown',
+                        banned: data.banned || false,
+                        banMessage: data.banMessage || '',
+                        lastActive: data.lastActive || new Date().toISOString()
+                    };
+                });
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                showGlobalError('Failed to fetch users. Check Firestore rules or network.');
+                return [];
+            }
+        }
+
+        async function renderUsers() {
+            if (!userTableBody || !mainContent) {
+                showGlobalError('Page not properly loaded. Please refresh.');
+                return;
+            }
             userTableBody.innerHTML = '';
-            const users = getLocalStorageItem('users', []);
+            const users = await getUsers();
             const now = new Date();
-            const onlineThreshold = 5 * 60 * 1000; // 5 minutes in ms
+            const onlineThreshold = 5 * 60 * 1000;
 
             users.forEach(user => {
                 const lastActive = new Date(user.lastActive);
                 const isOnline = (now - lastActive) < onlineThreshold;
-
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${user.username}</td>
@@ -259,45 +522,122 @@
                     </td>
                     <td>${lastActive.toLocaleString()}</td>
                     <td>
-                        <input type="text" class="ban-message-input" id="banMessage-${user.uid}" placeholder="Ban message" value="${user.banMessage || ''}">
-                        <button onclick="toggleBan('${user.uid}', this)">
+                        <input type="text" class="ban-message-input" id="banMessage-${user.uid}" placeholder="Ban message" value="${user.banMessage}">
+                        <button class="ban-button" data-uid="${user.uid}">
                             ${user.banned ? 'Unban' : 'Ban'}
                         </button>
                     </td>
                 `;
                 userTableBody.appendChild(row);
             });
+
+            document.querySelectorAll('.ban-button').forEach(button => {
+                button.addEventListener('click', () => toggleBan(button.dataset.uid, button));
+            });
         }
 
-        // Toggle ban status and update ban message
-        function toggleBan(userId, button) {
-            const users = getLocalStorageItem('users', []);
-            const userIndex = users.findIndex(u => u.uid === userId);
-            if (userIndex !== -1) {
-                const banMessageInput = document.getElementById(`banMessage-${userId}`);
-                const banMessage = banMessageInput.value.trim();
-                const newBanStatus = !users[userIndex].banned;
+        async function toggleBan(userId, button) {
+            if (!db || !userId || !button || !mainContent) {
+                showGlobalError('Invalid operation. Try again.');
+                return;
+            }
 
-                users[userIndex].banned = newBanStatus;
-                users[userIndex].banMessage = newBanStatus ? banMessage : '';
-                setLocalStorageItem('users', users);
+            button.disabled = true;
+            const originalText = button.textContent;
+            button.textContent = originalText === 'Ban' ? 'Banning...' : 'Unbanning...';
+            const banMessageInput = document.getElementById(`banMessage-${userId}`);
+            const banMessage = banMessageInput ? banMessageInput.value.trim() : '';
 
-                button.textContent = newBanStatus ? 'Unban' : 'Ban';
-                if (!newBanStatus) {
-                    banMessageInput.value = '';
+            try {
+                const userRef = doc(db, 'users', userId);
+                const users = await getUsers();
+                const user = users.find(u => u.uid === userId);
+
+                if (!user) {
+                    showGlobalError('User not found.');
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    return;
                 }
-                renderUsers();
-            } else {
-                loginError.textContent = 'Error: User not found.';
+
+                const newBanStatus = !user.banned;
+                await updateDoc(userRef, {
+                    banned: newBanStatus,
+                    banMessage: newBanStatus ? banMessage : ''
+                });
+
+                await renderUsers();
+            } catch (error) {
+                console.error('Error toggling ban:', error);
+                showGlobalError('Failed to update ban status.');
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
             }
         }
 
-        // Periodically refresh user list if admin is logged in
-        setInterval(() => {
-            if (adminContent.style.display === 'block') {
-                renderUsers();
+        setInterval(async () => {
+            if (adminContent && adminContent.classList.contains('visible')) {
+                await renderUsers();
             }
-        }, 10000); // Refresh every 10 seconds
+        }, 10000);
+
+        const starsContainer = document.querySelector('.stars');
+        function createStar() {
+            if (!starsContainer) return;
+            const star = document.createElement('div');
+            star.className = 'star';
+            const x = Math.random() * 100;
+            star.style.left = `${x}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            starsContainer.appendChild(star);
+            setTimeout(() => star.remove(), 4000);
+        }
+
+        let particleInterval = null;
+        function startParticles() {
+            if (particleInterval) clearInterval(particleInterval);
+            particleInterval = setInterval(createStar, 80);
+        }
+
+        function stopParticles() {
+            if (particleInterval) clearInterval(particleInterval);
+        }
+
+        function startAnimations() {
+            startParticles();
+        }
+
+        function stopAnimations() {
+            stopParticles();
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                if (adminContent && adminContent.classList.contains('visible')) {
+                    startParticles();
+                }
+            } else {
+                stopParticles();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (document.visibilityState === 'visible' && adminContent && adminContent.classList.contains('visible')) {
+                startParticles();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!mainContent || !loginSection || !adminContent) {
+                showGlobalError('Page not properly loaded. Please refresh.');
+                return;
+            }
+            mainContent.style.display = 'flex';
+            loginSection.style.display = 'flex';
+            adminContent.style.display = 'none';
+            startAnimations();
+        });
     </script>
 </body>
 </html>

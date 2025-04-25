@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>zri.info</title>
+    <title>ZRI.info Roadmap</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7573512423058423" crossorigin="anonymous"></script>
@@ -41,6 +41,7 @@
             transition: opacity 0.5s ease;
         }
 
+        /* Main Content Styles */
         .main-content {
             width: 100%;
             padding: 50px 20px;
@@ -57,6 +58,7 @@
             opacity: 1;
         }
 
+        /* Wave Animation Styles */
         .wave-container {
             position: fixed;
             bottom: 0;
@@ -148,7 +150,7 @@
         }
 
         .content-wrapper {
-            max-width: 700px;
+            max-width: 900px;
             padding: 50px;
             border-radius: 20px;
             background: rgba(26, 26, 26, 0.2);
@@ -177,7 +179,7 @@
         }
 
         h1 {
-            font-size: 6em;
+            font-size: 4em;
             color: #a259ff;
             margin: 20px 0;
             font-weight: 700;
@@ -214,23 +216,6 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
-        pre {
-            font-family: 'Roboto', sans-serif;
-            font-size: 1em;
-            color: #e0e0e0;
-            background: rgba(50, 50, 50, 0.5);
-            padding: 15px;
-            border-radius: 8px;
-            max-width: 700px;
-            text-align: left;
-            margin: 0 auto;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.2s;
-            white-space: pre-wrap;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
         @keyframes fadeInUp {
             to {
                 opacity: 1;
@@ -238,12 +223,54 @@
             }
         }
 
+        /* Roadmap Specific Styles */
+        .roadmap-container {
+            width: 100%;
+            margin-top: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards 0.4s;
+        }
+
+        .version-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(50, 50, 50, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .version-section h2 {
+            font-size: 1.8em;
+            color: #a259ff;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(162, 89, 255, 0.5);
+        }
+
+        .version-section ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .version-section li {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            margin: 0.5rem 0;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .version-section li::before {
+            content: '🚀';
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+
         .button-container {
             margin: 3rem 0;
             display: flex;
-            flex-direction: column;
-            gap: 25px;
-            align-items: center;
+            justify-content: center;
         }
 
         a {
@@ -272,13 +299,7 @@
             opacity: 0;
             transform: translateX(-50px);
             animation: slideIn 0.8s ease forwards;
-            animation-delay: calc(var(--index) * 0.3s);
         }
-
-        button:nth-child(1) { --index: 0; }
-        button:nth-child(2) { --index: 1; }
-        button:nth-child(3) { --index: 2; }
-        button:nth-child(4) { --index: 3; }
 
         @keyframes slideIn {
             to {
@@ -291,11 +312,6 @@
             transform: scale(1.05);
             box-shadow: 0 0 25px rgba(162, 89, 255, 0.6);
             background: linear-gradient(135deg, #333 0%, #444 100%);
-        }
-
-        button:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(162, 89, 255, 0.5);
         }
 
         button::after {
@@ -316,321 +332,119 @@
             height: 350px;
         }
 
-        .play-icon::before {
-            content: '▶';
+        .home-icon::before {
+            content: '🏠';
             font-size: 1em;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
-
-        .proxy-icon::before {
-            content: '🔌';
-            font-size: 1em;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
-
-        .app-icon::before {
-            content: '📱';
-            font-size: 1em;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
-
-        .readme-icon::before {
-            content: '📜';
-            font-size: 1em;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
-
-        .sidebar-tab {
-            position: fixed;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-
-        .sidebar-tab.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .sidebar-button {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #1f1f1f 0%, #333 100%);
-            border: none;
-            border-radius: 12px;
-            color: #ffffff;
-            font-size: 1.1em;
-            font-weight: 600;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 0 15px rgba(162, 89, 255, 0.3);
-            opacity: 0;
-            transform: translateX(100%);
-            animation: slideInSidebar 0.8s ease forwards;
-            animation-delay: 0.5s;
-        }
-
-        .sidebar-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(162, 89, 255, 0.6);
-            background: linear-gradient(135deg, #333 0%, #444 100%);
-        }
-
-        .sidebar-button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(162, 89, 255, 0.4), transparent);
-            transition: width 0.5s ease, height 0.5s ease;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-        }
-
-        .sidebar-button:hover::after {
-            width: 200px;
-            height: 200px;
-        }
-
-        .update-icon::before {
-            content: '🔔';
-            font-size: 1em;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
-
-        @keyframes slideInSidebar {
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 3.5em; }
+            h1 { font-size: 3em; }
             p { font-size: 1.1em; }
-            pre { font-size: 0.9em; padding: 10px; }
+            .content-wrapper { padding: 30px; }
+            .main-content { padding: 30px; }
+            .wave-container { height: 80px; }
+            .version-section h2 { font-size: 1.5em; }
+            .version-section li { font-size: 1em; }
             button { padding: 12px 30px; font-size: 1.2em; width: 180px; }
-            .content-wrapper {
-                padding: 30px;
-            }
-            .main-content {
-                padding: 30px;
-            }
-            .wave-container {
-                height: 80px;
-            }
-            .sidebar-button {
-                font-size: 0.9em;
-                padding: 10px 15px;
-            }
-        }
-
-        .global-error {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ff6666;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            z-index: 2000;
-            display: none;
-            text-align: center;
-            max-width: 80%;
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar Tab -->
-    <div class="sidebar-tab" id="sidebarTab">
-        <a href="update-log.html" id="updateLogLink">
-            <button class="sidebar-button"><span class="update-icon"></span> Updates</button>
-        </a>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content" id="mainContent">
-        <div class="stars"></div>
-        <div class="wave-container">
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-        </div>
-
-        <div class="content-wrapper">
-            <h1 id="title">zri.info</h1>
-            <p>A site for local games, proxies, and other cool things</p>
-            <div class="button-container">
-                <a href="game.html" id="gamesLink"><button><span class="play-icon"></span> Games</button></a>
-                <a href="proxy/indexproxy.html"><button><span class="proxy-icon"></span> Proxy</button></a>
-                <a href="app.html"><button><span class="app-icon"></span> App</button></a>
-                <a href="readme.html" id="readmeLink"><button><span class="readme-icon"></span> README</button></a>
+    <body>
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <div class="stars"></div>
+            <div class="wave-container">
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
             </div>
-            <p>If you encounter any games that are not functioning, please report them to <a href="mailto:help@zri.info" style="color: #a259ff; text-decoration: underline;">help@zri.info</a>. Kindly use the following format for your submission:</p>
-            <pre>
-Game: Example Game, Issue: Blocked
-Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
-            </pre>
+    
+            <div class="content-wrapper">
+                <h1 id="title">ZRI.info Roadmap</h1>
+                <p>Post-1.0 plans to enhance style, admin tools, user experience, games, community, and retro-futuristic features.</p>
+                <div class="roadmap-container">
+                    <div class="version-section">
+                        <h2>🎛️ v1.1 – Core Interactions & Style Polish</h2>
+                        <ul>
+                            <li>🖱️ Click Sounds & Hover FX: Subtle retro audio and visual feedback to make the site feel tactile.</li>
+                            <li>🧃 UI Juice: Animations and micro-interactions that make everything feel alive — buttons squish, text pulses, etc.</li>
+                            <li>🌀 Dynamic Backgrounds: Themes that react to time of day or user activity (stars move, waves shift, etc.).</li>
+                            <li>🧊 Cooldown Mode: Optional “chill” mode that reduces motion/sound for late-night or low-energy browsing.</li>
+                            <li>📼 Theme Presets: Switch between vaporwave, space noir, CRT green, or neon grid styles.</li>
+                        </ul>
+                    </div>
+                    <div class="version-section">
+                        <h2>🛠️ v1.2 – Admin Power-Ups</h2>
+                        <ul>
+                            <li>🗃️ User Roles: Add roles (admin, mod, guest) to users in local storage.</li>
+                            <li>🚫 Auto Ban Triggers: Ban based on suspicious behavior or too many attempts.</li>
+                            <li>📌 Persistent Bans: Ban by IP/device fingerprint, not just UID.</li>
+                            <li>🛎️ Activity Alerts: Notify on new users or logins via webhook.</li>
+                            <li>📈 Analytics Dashboard: Real-time user and game analytics for admins.</li>
+                            <li>🗳️ Moderation Queue: Approve or reject user submissions in a centralized queue.</li>
+                        </ul>
+                    </div>
+                    <div class="version-section">
+                        <h2>📲 v1.3 – App Mode & UX</h2>
+                        <ul>
+                            <li>📱 PWA Integration: Make zri.info installable as a web app.</li>
+                            <li>🌊 Animated Launch Splash: Stylized startup screen for mobile launch.</li>
+                            <li>🧭 Floating App Bar: Always-accessible navbar for games, blog, devlog.</li>
+                            <li>✨ Audio/Theme Toggles: Let users switch site theme + ambient sounds.</li>
+                            <li>🌐 Offline Mode: Cache key pages and games for offline access.</li>
+                            <li>👆 Gesture Controls: Swipe and tap gestures for intuitive navigation.</li>
+                        </ul>
+                    </div>
+                    <div class="version-section">
+                        <h2>🎮 v1.4 – Games + Meta</h2>
+                        <ul>
+                            <li>🎲 Dynamic Game List: Admin panel to add/edit games via JSON.</li>
+                            <li>🔄 Game Versioning: Add changelogs or update notes for games.</li>
+                            <li>🔍 Search + Tags: Let users search/filter by genre or keywords.</li>
+                            <li>🧾 Game Descriptions: Display blurbs and author info on click.</li>
+                            <li>🏆 Leaderboards: Per-game rankings for top players.</li>
+                            <li>🎖️ Cross-Game Achievements: Unlockable badges across multiple games.</li>
+                        </ul>
+                    </div>
+                    <div class="version-section">
+                        <h2>🤝 v1.6 – Social & Collab</h2>
+                        <ul>
+                            <li>🗨️ Game Comments: Lightweight per-game comment threads.</li>
+                            <li>⭐ Public Profiles: Users can create & share game lists.</li>
+                            <li>🎁 Dev Submissions: External devs can pitch games for listing.</li>
+                            <li>📡 API Endpoints: Embed or query game metadata externally.</li>
+                            <li>📺 Live Game Streaming: Users can stream gameplay to others.</li>
+                            <li>🎉 Community Events: Host game tournaments or dev challenges.</li>
+                        </ul>
+                    </div>
+                    <div class="version-section">
+                        <h2>🌌 v1.7 – Retro-Future Horizons</h2>
+                        <ul>
+                            <li>🎨 Pixel Art Editor: Create and share pixel art assets in a 90s sprite editor.</li>
+                            <li>🕹️ Virtual Arcade Hub: 3D-rendered arcade to browse games and socialize.</li>
+                            <li>🥚 Dynamic Easter Eggs: Randomized hidden interactions (e.g., secret links).</li>
+                            <li>🧩 Modular Plugins: Community-built widgets for custom UI and features.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <a href="index.html"><button><span class="home-icon"></span> Home</button></a>
+                </div>
         </div>
     </div>
 
-    <div class="global-error" id="globalError"></div>
-
-    <script type="module">
-        // Import Firebase SDKs
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCl2cCHc-sQk-wmaT-RmwQ7hixIeT7sjNc",
-            authDomain: "zri-info-40027.firebaseapp.com",
-            projectId: "zri-info-40027",
-            storageBucket: "zri-info-40027.firebasestorage.app",
-            messagingSenderId: "802389654666",
-            appId: "1:802389654666:web:e2229db3f723eddd888173",
-            measurementId: "G-QQTJ31LX4E"
-        };
-
-        // Initialize Firebase
-        let db;
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-        } catch (error) {
-            showGlobalError('Failed to initialize Firebase/Firestore. Check configuration and network.');
-            console.error('Firebase initialization error:', error);
-            window.location.href = 'login.html';
-        }
-
+    <script>
         // Elements
         const mainContent = document.getElementById('mainContent');
-        const sidebarTab = document.getElementById('sidebarTab');
 
-        // Global error display function
-        function showGlobalError(message) {
-            const globalError = document.getElementById('globalError');
-            globalError.textContent = message;
-            globalError.style.display = 'block';
-            console.error(message);
-            setTimeout(() => {
-                globalError.style.display = 'none';
-            }, 5000);
-        }
-
-        // Utility function to convert Firestore timestamp to ISO string
-        function toISOString(value) {
-            if (!value) return new Date().toISOString();
-            if (typeof value === 'string') return value;
-            if (value instanceof Date) return value.toISOString();
-            if (value.toDate) return value.toDate().toISOString();
-            return new Date(value).toISOString();
-        }
-
-        // Fetch users from Firestore
-        async function getUsers() {
-            if (!db) {
-                showGlobalError('Database not initialized.');
-                return [];
-            }
-            try {
-                const snapshot = await getDocs(collection(db, 'users'));
-                const users = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    return {
-                        id: doc.id,
-                        ...data,
-                        lastActive: toISOString(data.lastActive)
-                    };
-                });
-                return users;
-            } catch (error) {
-                console.error('Error fetching users:', error);
-                showGlobalError('Failed to fetch users. Check Firestore rules and network.');
-                return [];
-            }
-        }
-
-        // Update user activity
-        async function updateUserActivity(uid) {
-            if (!db) {
-                console.error('Firestore not initialized');
-                return;
-            }
-            try {
-                await updateDoc(doc(db, 'users', uid), {
-                    lastActive: new Date().toISOString()
-                });
-            } catch (error) {
-                console.error('Error updating user activity:', error);
-            }
-        }
-
-        // Check user status on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (!db) {
-                showGlobalError('Database not initialized. Redirecting to login.');
-                setTimeout(() => window.location.href = 'login.html', 2000);
-                return;
-            }
-
-            const currentUserId = localStorage.getItem('currentUserId');
-            if (!currentUserId) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            try {
-                const users = await getUsers();
-                const user = users.find(u => u.uid === currentUserId);
-
-                if (!user || user.banned) {
-                    localStorage.removeItem('currentUserId');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                mainContent.style.display = 'flex';
-                mainContent.classList.add('visible');
-                setTimeout(() => {
-                    sidebarTab.classList.add('visible');
-                }, 500);
-                startAnimations();
-                updateUserActivity(currentUserId);
-            } catch (error) {
-                console.error('Error during page load:', error);
-                showGlobalError('Failed to load user data. Redirecting to login.');
-                setTimeout(() => window.location.href = 'login.html', 2000);
-            }
+        // Show main content on load
+        window.addEventListener('load', () => {
+            mainContent.style.display = 'flex';
+            mainContent.classList.add('visible');
+            startAnimations();
         });
-
-        // Update activity every 30 seconds
-        setInterval(async () => {
-            if (!db) return;
-            try {
-                const currentUserId = localStorage.getItem('currentUserId');
-                if (!currentUserId) return;
-                const users = await getUsers();
-                const user = users.find(u => u.uid === currentUserId);
-                if (user && !user.banned && mainContent.classList.contains('visible')) {
-                    updateUserActivity(currentUserId);
-                } else {
-                    window.location.href = 'login.html';
-                }
-            } catch (error) {
-                console.error('Error in activity interval:', error);
-            }
-        }, 30000);
 
         // Split Header into Letters for Animation
         const title = document.getElementById('title');
@@ -683,25 +497,7 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
         });
 
         // Smooth navigation
-        document.getElementById('gamesLink')?.addEventListener('click', function(e) {
-            e.preventDefault();
-            mainContent.style.opacity = '0';
-            mainContent.style.transition = 'opacity 0.3s ease';
-            setTimeout(() => {
-                window.location.href = this.href;
-            }, 300);
-        });
-
-        document.getElementById('readmeLink')?.addEventListener('click', function(e) {
-            e.preventDefault();
-            mainContent.style.opacity = '0';
-            mainContent.style.transition = 'opacity 0.3s ease';
-            setTimeout(() => {
-                window.location.href = this.href;
-            }, 300);
-        });
-
-        document.getElementById('updateLogLink')?.addEventListener('click', function(e) {
+        document.querySelector('a[href="index.html"]').addEventListener('click', function(e) {
             e.preventDefault();
             mainContent.style.opacity = '0';
             mainContent.style.transition = 'opacity 0.3s ease';
@@ -710,6 +506,5 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             }, 300);
         });
     </script>
-    <script src="tracking.js"></script>
 </body>
 </html>

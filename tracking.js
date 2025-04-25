@@ -1,3 +1,8 @@
+// tracking.js
+import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+const db = getFirestore();
+
 function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -20,44 +25,54 @@ function getDeviceId() {
     return newId;
 }
 
-function getUsers() {
+function toISOString(value) {
+    if (!value) return new Date().toISOString();
+    if (typeof value === 'string') return value;
+    if (value instanceof Date) return value.toISOString();
+    if (value.toDate) return value.toDate().toISOString(); // Firestore Timestamp
+    return new Date(value).toISOString();
+}
+
+async function getUsers() {
     try {
-        const users = localStorage.getItem('users');
-        return users ? JSON.parse(users) : {};
+        const snapshot = await getDocs(collection(db, 'users'));
+        return snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                lastActive: toISOString(data.lastActive)
+            };
+        });
     } catch (error) {
         console.error('Error loading users:', error);
-        return {};
+        return [];
     }
 }
 
-function saveUsers(users) {
+async function updateUserActivity() {
+    const deviceId = getDeviceId();
     try {
-        localStorage.setItem('users', JSON.stringify(users));
+        await updateDoc(doc(db, 'users', deviceId), {
+            lastActive: new Date().toISOString() // Store as ISO string
+        });
     } catch (error) {
-        console.error('Error saving users:', error);
+        console.error('Error updating user activity:', error);
     }
 }
 
-function updateUserActivity() {
+async function isBanned() {
     const deviceId = getDeviceId();
-    const users = getUsers();
-    users[deviceId] = {
-        lastActive: new Date().toISOString(),
-        banned: users[deviceId]?.banned || false
-    };
-    saveUsers(users);
+    const users = await getUsers();
+    const user = users.find(u => u.uid === deviceId);
+    return user?.banned || false;
 }
 
-function isBanned() {
-    const deviceId = getDeviceId();
-    const users = getUsers();
-    return users[deviceId]?.banned || false;
-}
-
-// Enforce ban on page load
-if (isBanned()) {
-    document.body.innerHTML = '<h1 style="color: #ff6666; text-align: center; margin-top: 20%;">You have been banned from zri.info</h1>';
-} else {
-    updateUserActivity();
-    setInterval(updateUserActivity, 30000);
-}
+(async () => {
+    if (await isBanned()) {
+        document.body.innerHTML = '<h1 style="color: #ff6666; text-align: center; margin-top: 20%;">You have been banned from zri.info</h1>';
+    } else {
+        updateUserActivity();
+        setInterval(updateUserActivity, 30000);
+    }
+})();
