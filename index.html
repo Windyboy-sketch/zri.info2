@@ -15,6 +15,8 @@
     <link rel="apple-touch-icon" sizes="167x167" href="ICON.jpg">
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon-default.png">
     <link rel="apple-touch-startup-image" href="IMG_0823.jpeg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <!-- Bcrypt.js for password hashing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -39,6 +41,138 @@
         body.fade-out {
             opacity: 0;
             transition: opacity 0.5s ease;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            color: #a259ff;
+            font-size: 1.5em;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-screen.hiding {
+            opacity: 0;
+        }
+
+        .username-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .username-prompt.hiding {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .username-prompt h2 {
+            font-size: 2em;
+            color: #a259ff;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+        }
+
+        .username-prompt input {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background: #1f1f1f;
+            color: #fff;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 1rem;
+            font-family: 'Roboto', sans-serif;
+            transition: box-shadow 0.3s;
+        }
+
+        .username-prompt input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(162, 89, 255, 0.5);
+        }
+
+        .username-prompt button {
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #a259ff 0%, #c084fc 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            margin: 0.5rem;
+        }
+
+        .username-prompt button:hover {
+            background: linear-gradient(135deg, #c084fc 0%, #a259ff 100%);
+            transform: scale(1.05);
+            box-shadow: 0 2px 15px rgba(162, 89, 255, 0.6);
+        }
+
+        .username-prompt button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-message {
+            color: #ff6666;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1rem;
+            background: rgba(255, 102, 102, 0.2);
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .ban-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .ban-message h2 {
+            font-size: 2.5em;
+            color: #ff6666;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 15px rgba(255, 102, 102, 0.7);
+        }
+
+        .ban-message p {
+            font-size: 1.2em;
+            color: #d0d0d0;
+            max-width: 600px;
         }
 
         .main-content {
@@ -451,6 +585,27 @@
     </style>
 </head>
 <body>
+    <!-- Loading State -->
+    <div class="loading-screen" id="loadingScreen">
+        <p>Loading...</p>
+    </div>
+
+    <!-- Username/Login Prompt -->
+    <div class="username-prompt" id="usernamePrompt">
+        <h2 id="promptTitle">Register or Login</h2>
+        <input type="text" id="usernameInput" placeholder="Username" maxlength="20">
+        <input type="password" id="passwordInput" placeholder="Password">
+        <div class="error-message" id="usernameError"></div>
+        <button id="registerButton">Register</button>
+        <button id="loginButton" onclick="login()">Login</button>
+    </div>
+
+    <!-- Ban Message -->
+    <div class="ban-message" id="banMessage">
+        <h2>You Are Banned</h2>
+        <p id="banMessageText"></p>
+    </div>
+
     <!-- Sidebar Tab -->
     <div class="sidebar-tab" id="sidebarTab">
         <a href="update-log.html" id="updateLogLink">
@@ -489,7 +644,7 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
     <script type="module">
         // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, setDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -508,21 +663,33 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
         } catch (error) {
-            showGlobalError('Failed to initialize Firebase/Firestore. Check configuration and network.');
-            console.error('Firebase initialization error:', error);
-            window.location.href = 'login.html';
+            showGlobalError('Failed to initialize Firebase. Please try again later.');
         }
 
         // Elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const usernamePrompt = document.getElementById('usernamePrompt');
+        const promptTitle = document.getElementById('promptTitle');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const usernameError = document.getElementById('usernameError');
+        const registerButton = document.getElementById('registerButton');
+        const loginButton = document.getElementById('loginButton');
         const mainContent = document.getElementById('mainContent');
+        const banMessage = document.getElementById('banMessage');
+        const banMessageText = document.getElementById('banMessageText');
         const sidebarTab = document.getElementById('sidebarTab');
+
+        // Add event listener for Register button
+        registerButton.addEventListener('click', () => {
+            registerUsername();
+        });
 
         // Global error display function
         function showGlobalError(message) {
             const globalError = document.getElementById('globalError');
             globalError.textContent = message;
             globalError.style.display = 'block';
-            console.error(message);
             setTimeout(() => {
                 globalError.style.display = 'none';
             }, 5000);
@@ -533,8 +700,36 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             if (!value) return new Date().toISOString();
             if (typeof value === 'string') return value;
             if (value instanceof Date) return value.toISOString();
-            if (value.toDate) return value.toDate().toISOString();
+            if (value.toDate) return value.toDate().toISOString(); // Firestore Timestamp
             return new Date(value).toISOString();
+        }
+
+        // Generate a unique user ID
+        function generateUserId() {
+            return 'user_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+        }
+
+        // Get or set the current user's ID
+        let currentUserId = localStorage.getItem('currentUserId');
+        if (!currentUserId) {
+            currentUserId = generateUserId();
+            localStorage.setItem('currentUserId', currentUserId);
+        }
+
+        // Test Firestore connectivity
+        async function testFirestore() {
+            if (!db) {
+                showGlobalError('Database not initialized.');
+                return false;
+            }
+            try {
+                const testDoc = doc(db, 'test', 'test_doc');
+                await setDoc(testDoc, { test: 'Firestore connectivity test', timestamp: new Date().toISOString() });
+                return true;
+            } catch (error) {
+                showGlobalError('Database connectivity test failed. Please try again.');
+                return false;
+            }
         }
 
         // Fetch users from Firestore
@@ -555,51 +750,174 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                 });
                 return users;
             } catch (error) {
-                console.error('Error fetching users:', error);
-                showGlobalError('Failed to fetch users. Check Firestore rules and network.');
+                showGlobalError('Failed to fetch user data. Please try again.');
                 return [];
             }
         }
 
-        // Update user activity
-        async function updateUserActivity(uid) {
+        // Register new user
+        async function registerUsername() {
             if (!db) {
-                console.error('Firestore not initialized');
+                showGlobalError('Database not initialized. Cannot register.');
                 return;
             }
+
+            registerButton.disabled = true;
+            loginButton.disabled = true;
+            registerButton.textContent = 'Registering...';
+            usernameError.textContent = '';
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            // Validate inputs
+            if (!username || !password) {
+                usernameError.textContent = 'Please enter both username and password.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                registerButton.textContent = 'Register';
+                return;
+            }
+
+            if (username.length < 3 || username.length > 20) {
+                usernameError.textContent = 'Username must be between 3 and 20 characters.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                registerButton.textContent = 'Register';
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                usernameError.textContent = 'Username can only contain letters, numbers, and underscores.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                registerButton.textContent = 'Register';
+                return;
+            }
+
+            if (password.length < 6) {
+                usernameError.textContent = 'Password must be at least 6 characters.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                registerButton.textContent = 'Register';
+                return;
+            }
+
+            // Check if username is taken
+            let users;
             try {
-                await updateDoc(doc(db, 'users', uid), {
-                    lastActive: new Date().toISOString()
-                });
+                users = await getUsers();
             } catch (error) {
-                console.error('Error updating user activity:', error);
+                usernameError.textContent = 'Error checking username availability.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                registerButton.textContent = 'Register';
+                return;
+            }
+            const usernameTaken = users.some(u => u.username === username);
+
+            if (usernameTaken) {
+                usernameError.textContent = 'Username is already taken.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                registerButton.textContent = 'Register';
+                return;
+            }
+
+            // Simplified user creation (no password hashing for now)
+            const newUser = {
+                uid: currentUserId,
+                username: username,
+                password: 'temp_hashed_' + password,
+                banned: false,
+                banMessage: '',
+                lastActive: new Date().toISOString()
+            };
+            try {
+                await setDoc(doc(db, 'users', currentUserId), newUser);
+                // Transition to main content
+                usernamePrompt.classList.add('hiding');
+                setTimeout(() => {
+                    usernamePrompt.style.display = 'none';
+                    mainContent.style.display = 'flex';
+                    mainContent.classList.add('visible');
+                    setTimeout(() => {
+                        sidebarTab.classList.add('visible');
+                    }, 500);
+                    startAnimations();
+                    updateUserActivity(currentUserId);
+                    registerButton.disabled = false;
+                    loginButton.disabled = false;
+                    registerButton.textContent = 'Register';
+                }, 300);
+            } catch (error) {
+                usernameError.textContent = 'Error registering user. Please try again.';
+                showGlobalError('Failed to register user. Please try again.');
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                registerButton.textContent = 'Register';
             }
         }
 
-        // Check user status on page load
-        document.addEventListener('DOMContentLoaded', async () => {
+        // Login existing user
+        async function login() {
             if (!db) {
-                showGlobalError('Database not initialized. Redirecting to login.');
-                setTimeout(() => window.location.href = 'login.html', 2000);
+                showGlobalError('Database not initialized. Cannot login.');
+                return;
+            }
+            registerButton.disabled = true;
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
+            usernameError.textContent = '';
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!username || !password) {
+                usernameError.textContent = 'Please enter both username and password.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
                 return;
             }
 
-            const currentUserId = localStorage.getItem('currentUserId');
-            if (!currentUserId) {
-                window.location.href = 'login.html';
+            const users = await getUsers();
+            const user = users.find(u => u.username === username);
+
+            if (!user) {
+                usernameError.textContent = 'Username not found.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
                 return;
             }
 
-            try {
-                const users = await getUsers();
-                const user = users.find(u => u.uid === currentUserId);
+            const passwordMatch = user.password === 'temp_hashed_' + password;
 
-                if (!user || user.banned) {
-                    localStorage.removeItem('currentUserId');
-                    window.location.href = 'login.html';
-                    return;
-                }
+            if (!passwordMatch) {
+                usernameError.textContent = 'Incorrect password.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
+                return;
+            }
 
+            currentUserId = user.uid;
+            localStorage.setItem('currentUserId', currentUserId);
+
+            if (user.banned) {
+                usernamePrompt.style.display = 'none';
+                banMessage.style.display = 'flex';
+                banMessageText.textContent = user.banMessage || 'You have been banned from zri.info.';
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
+                return;
+            }
+
+            usernamePrompt.classList.add('hiding');
+            setTimeout(() => {
+                usernamePrompt.style.display = 'none';
                 mainContent.style.display = 'flex';
                 mainContent.classList.add('visible');
                 setTimeout(() => {
@@ -607,28 +925,107 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                 }, 500);
                 startAnimations();
                 updateUserActivity(currentUserId);
-            } catch (error) {
-                console.error('Error during page load:', error);
-                showGlobalError('Failed to load user data. Redirecting to login.');
-                setTimeout(() => window.location.href = 'login.html', 2000);
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
+            }, 300);
+        }
+
+        // Update user activity
+        async function updateUserActivity(uid) {
+            if (!db) {
+                return;
             }
+            try {
+                await updateDoc(doc(db, 'users', uid), {
+                    lastActive: new Date().toISOString()
+                });
+            } catch (error) {
+                // Silently handle error
+            }
+        }
+
+        // Check user status
+        async function checkUserStatus() {
+            if (!db) {
+                showGlobalError('Database not initialized. Please register or login.');
+                loadingScreen.classList.add('hiding');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    usernamePrompt.style.display = 'flex';
+                    usernamePrompt.style.opacity = '1';
+                }, 300);
+                return;
+            }
+
+            try {
+                await testFirestore();
+                const users = await getUsers();
+                const user = users.find(u => u.uid === currentUserId);
+
+                if (user && user.username) {
+                    if (user.banned) {
+                        loadingScreen.classList.add('hiding');
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            banMessage.style.display = 'flex';
+                            banMessageText.textContent = user.banMessage || 'You have been banned from zri.info.';
+                        }, 300);
+                    } else {
+                        loadingScreen.classList.add('hiding');
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            mainContent.style.display = 'flex';
+                            mainContent.classList.add('visible');
+                            setTimeout(() => {
+                                sidebarTab.classList.add('visible');
+                            }, 500);
+                            startAnimations();
+                            updateUserActivity(currentUserId);
+                        }, 300);
+                    }
+                } else {
+                    loadingScreen.classList.add('hiding');
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        usernamePrompt.style.display = 'flex';
+                        usernamePrompt.style.opacity = '1';
+                    }, 300);
+                }
+            } catch (error) {
+                showGlobalError('Failed to load user data. Please register or login.');
+                loadingScreen.classList.add('hiding');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    usernamePrompt.style.display = 'flex';
+                    usernamePrompt.style.opacity = '1';
+                }, 300);
+            }
+        }
+
+        // Check user status on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show loading screen initially
+            loadingScreen.style.display = 'flex';
+            usernamePrompt.style.display = 'none';
+            mainContent.style.display = 'none';
+            banMessage.style.display = 'none';
+
+            // Check user status
+            checkUserStatus();
         });
 
         // Update activity every 30 seconds
         setInterval(async () => {
             if (!db) return;
             try {
-                const currentUserId = localStorage.getItem('currentUserId');
-                if (!currentUserId) return;
                 const users = await getUsers();
                 const user = users.find(u => u.uid === currentUserId);
                 if (user && !user.banned && mainContent.classList.contains('visible')) {
                     updateUserActivity(currentUserId);
-                } else {
-                    window.location.href = 'login.html';
                 }
             } catch (error) {
-                console.error('Error in activity interval:', error);
+                // Silently handle error
             }
         }, 30000);
 
@@ -709,7 +1106,19 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                 window.location.href = this.href;
             }, 300);
         });
+
+        // Handle Enter key for inputs
+        usernameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
     </script>
-    <script src="tracking.js"></script>
 </body>
 </html>
