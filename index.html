@@ -118,6 +118,16 @@
             box-shadow: 0 0 10px rgba(162, 89, 255, 0.5);
         }
 
+        .dev-password-prompt .button-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 500px;
+        }
+
         .dev-password-prompt button {
             padding: 0.6rem 1.2rem;
             background: linear-gradient(135deg, #a259ff 0%, #c084fc 100%);
@@ -127,7 +137,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
-            margin: 0.5rem;
         }
 
         .dev-password-prompt button:hover {
@@ -141,6 +150,25 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+
+        .dev-password-prompt .update-tab {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #1f1f1f 0%, #333 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+
+        .dev-password-prompt .update-tab:hover {
+            background: linear-gradient(135deg, #333 0%, #444 100%);
+            transform: scale(1.05);
+            box-shadow: 0 2px 15px rgba(162, 89, 255, 0.6);
         }
 
         .username-prompt {
@@ -649,6 +677,14 @@
                 font-size: 1em;
                 max-width: 90%;
             }
+            .dev-password-prompt .update-tab {
+                font-size: 0.8em;
+                padding: 0.4rem 0.8rem;
+            }
+            .dev-password-prompt .button-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
         }
 
         .global-error {
@@ -674,7 +710,10 @@
         <p>zri.info is currently under maintenance and accessible only to developers. The site needs to be published to enable third-party services like Firebase. Please enter the developer password to proceed.</p>
         <input type="password" id="devPasswordInput" placeholder="Developer Password">
         <div class="error-message" id="devPasswordError"></div>
-        <button id="devPasswordSubmit">Submit</button>
+        <div class="button-container">
+            <button id="devPasswordSubmit">Submit</button>
+            <a href="upt-progress.html" class="update-tab">Check Update Progress</a>
+        </div>
     </div>
 
     <!-- Loading State -->
