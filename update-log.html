@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        const firebaseConfig = {
+          apiKey: "AIzaSyCl2cCHc-sQk-wmaT-RmwQ7hixIeT7sjNc",
+          authDomain: "zri-info-40027.firebaseapp.com",
+          projectId: "zri-info-40027",
+          storageBucket: "zri-info-40027.firebasestorage.app",
+          messagingSenderId: "802389654666",
+          appId: "1:802389654666:web:e2229db3f723eddd888173",
+          measurementId: "G-QQTJ31LX4E"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>zri.info - Update Log</title>
@@ -425,5 +442,21 @@
             }, 300);
         });
     </script>
+    <script src="banCheck.js"></script>
+    <script>
+        // Prevent Cloudflare script from interfering with redirects
+        (function() {
+            const originalLocationHref = window.location.href;
+            setTimeout(() => {
+                if (window.location.href === originalLocationHref && typeof firebase !== 'undefined') {
+                    console.log("Cloudflare script may have interfered. Re-running ban check.");
+                    if (typeof enforceBanCheck === 'function') {
+                        enforceBanCheck();
+                    }
+                }
+            }, 2000);
+        })();
+    </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9363087f4c67676f',t:'MTc0NTYzODU1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

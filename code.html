@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        const firebaseConfig = {
+          apiKey: "AIzaSyCl2cCHc-sQk-wmaT-RmwQ7hixIeT7sjNc",
+          authDomain: "zri-info-40027.firebaseapp.com",
+          projectId: "zri-info-40027",
+          storageBucket: "zri-info-40027.firebasestorage.app",
+          messagingSenderId: "802389654666",
+          appId: "1:802389654666:web:e2229db3f723eddd888173",
+          measurementId: "G-QQTJ31LX4E"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+      </script>
     <title>Access Code Required</title>
     <style>
         body {

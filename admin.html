@@ -388,6 +388,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -403,6 +404,7 @@
         let db;
         try {
             const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app); // Initialize Auth for banCheck.js
             db = getFirestore(app);
         } catch (error) {
             showGlobalError('Failed to initialize Firebase. Check configuration or network.');
@@ -638,6 +640,22 @@
             adminContent.style.display = 'none';
             startAnimations();
         });
+    </script>
+    <!-- Include banCheck.js to handle authentication redirects -->
+    <script src="banCheck.js"></script>
+    <script>
+        // Prevent Cloudflare script from interfering with redirects
+        (function() {
+            const originalLocationHref = window.location.href;
+            setTimeout(() => {
+                if (window.location.href === originalLocationHref && typeof firebase !== 'undefined') {
+                    console.log("Cloudflare script may have interfered. Re-running ban check.");
+                    if (typeof enforceBanCheck === 'function') {
+                        enforceBanCheck();
+                    }
+                }
+            }, 2000);
+        })();
     </script>
 </body>
 </html>

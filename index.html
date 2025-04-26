@@ -906,6 +906,8 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
 
             if (password === DEV_PASSWORD) {
                 debugLog('Dev password correct, proceeding.');
+                // Store verification in localStorage
+                localStorage.setItem('devPasswordVerified', 'true');
                 devPasswordPrompt.classList.add('hiding');
                 setTimeout(() => {
                     devPasswordPrompt.style.display = 'none';
@@ -946,6 +948,14 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             if (value instanceof Date) return value.toISOString();
             if (value.toDate) return value.toDate().toISOString(); // Firestore Timestamp
             return new Date(value).toISOString();
+        }
+
+        // Format remaining cooldown time as MM:SS
+        function formatCooldownTime(remainingMs) {
+            const totalSeconds = Math.floor(remainingMs / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
 
         // Generate a unique user ID
@@ -1205,6 +1215,9 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             if (!db) {
                 debugLog('Database not initialized. Cannot login.', 'error');
                 showGlobalError('Database not initialized. Cannot login.');
+                registerButton.disabled = false;
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
                 return;
             }
             registerButton.disabled = true;
@@ -1228,19 +1241,32 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
 
             // Check login attempts
             const deviceId = currentUserId; // Using userId as a proxy for device identifier
+            debugLog(`Checking login attempts for device ${deviceId}...`);
             let loginAttempts = await getLoginAttempts(deviceId);
+            if (!loginAttempts) {
+                debugLog('Failed to fetch login attempts, initializing default.', 'error');
+                loginAttempts = { failedAttempts: 0, lastFailedAt: null, cooldownUntil: null };
+            }
+
             const now = new Date();
             let cooldownUntil = loginAttempts.cooldownUntil ? new Date(loginAttempts.cooldownUntil) : null;
 
             if (cooldownUntil && now < cooldownUntil) {
-                const minutesLeft = Math.ceil((cooldownUntil - now) / (1000 * 60));
-                debugLog(`Cooldown active: ${minutesLeft} minutes remaining.`, 'error');
-                usernameError.textContent = `Too many failed login attempts. Please try again in ${minutesLeft} minute${minutesLeft > 1 ? 's' : ''}.`;
+                const remainingMs = cooldownUntil - now;
+                const formattedTime = formatCooldownTime(remainingMs);
+                debugLog(`Cooldown active: Try again in ${formattedTime}.`, 'error');
+                usernameError.textContent = `Too many failed login attempts. Try again in ${formattedTime}.`;
                 registerButton.disabled = false;
                 loginButton.disabled = false;
                 loginButton.textContent = 'Login';
                 return;
+            } else if (cooldownUntil && now >= cooldownUntil) {
+                debugLog('Cooldown period has expired, resetting login attempts.');
+                await resetLoginAttempts(deviceId);
+                loginAttempts = { failedAttempts: 0, lastFailedAt: null, cooldownUntil: null };
             }
+
+            debugLog(`Current failed attempts: ${loginAttempts.failedAttempts}`);
 
             const users = await getUsers();
             const user = users.find(u => u.username === username);
@@ -1249,13 +1275,15 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                 // Increment failed attempts
                 loginAttempts.failedAttempts += 1;
                 loginAttempts.lastFailedAt = now.toISOString();
+                const remainingAttempts = MAX_LOGIN_ATTEMPTS - loginAttempts.failedAttempts;
                 if (loginAttempts.failedAttempts >= MAX_LOGIN_ATTEMPTS) {
                     loginAttempts.cooldownUntil = new Date(now.getTime() + COOLDOWN_MINUTES * 60 * 1000).toISOString();
+                    const formattedTime = formatCooldownTime(COOLDOWN_MINUTES * 60 * 1000);
                     debugLog('Max login attempts reached. Cooldown initiated.', 'error');
-                    usernameError.textContent = `Too many failed login attempts. Please try again in ${COOLDOWN_MINUTES} minutes.`;
+                    usernameError.textContent = `Too many failed login attempts. Try again in ${formattedTime}.`;
                 } else {
-                    debugLog('Username not found.', 'error');
-                    usernameError.textContent = 'Username not found.';
+                    debugLog(`Username not found. ${remainingAttempts} attempts remaining.`, 'error');
+                    usernameError.textContent = `Username not found. ${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining.`;
                 }
                 await updateLoginAttempts(deviceId, loginAttempts.failedAttempts, loginAttempts.lastFailedAt, loginAttempts.cooldownUntil);
                 registerButton.disabled = false;
@@ -1270,13 +1298,15 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                 // Increment failed attempts
                 loginAttempts.failedAttempts += 1;
                 loginAttempts.lastFailedAt = now.toISOString();
+                const remainingAttempts = MAX_LOGIN_ATTEMPTS - loginAttempts.failedAttempts;
                 if (loginAttempts.failedAttempts >= MAX_LOGIN_ATTEMPTS) {
                     loginAttempts.cooldownUntil = new Date(now.getTime() + COOLDOWN_MINUTES * 60 * 1000).toISOString();
+                    const formattedTime = formatCooldownTime(COOLDOWN_MINUTES * 60 * 1000);
                     debugLog('Max login attempts reached. Cooldown initiated.', 'error');
-                    usernameError.textContent = `Too many failed login attempts. Please try again in ${COOLDOWN_MINUTES} minutes.`;
+                    usernameError.textContent = `Too many failed login attempts. Try again in ${formattedTime}.`;
                 } else {
-                    debugLog(`Incorrect password. ${MAX_LOGIN_ATTEMPTS - loginAttempts.failedAttempts} attempts remaining.`, 'error');
-                    usernameError.textContent = `Incorrect password. ${MAX_LOGIN_ATTEMPTS - loginAttempts.failedAttempts} attempts remaining.`;
+                    debugLog(`Incorrect password. ${remainingAttempts} attempts remaining.`, 'error');
+                    usernameError.textContent = `Incorrect password. ${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining.`;
                 }
                 await updateLoginAttempts(deviceId, loginAttempts.failedAttempts, loginAttempts.lastFailedAt, loginAttempts.cooldownUntil);
                 registerButton.disabled = false;
@@ -1286,6 +1316,7 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
             }
 
             // Successful login, reset attempts
+            debugLog('Login successful, resetting login attempts.');
             await resetLoginAttempts(deviceId);
             currentUserId = user.uid;
             localStorage.setItem('currentUserId', currentUserId);
@@ -1400,12 +1431,23 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
         // Check user status on page load
         document.addEventListener('DOMContentLoaded', () => {
             debugLog('DOM fully loaded.');
-            // Show developer password prompt initially
-            devPasswordPrompt.style.display = 'flex';
-            loadingScreen.style.display = 'none';
-            usernamePrompt.style.display = 'none';
-            mainContent.style.display = 'none';
-            banMessage.style.display = 'none';
+            // Check if developer password has been verified
+            if (localStorage.getItem('devPasswordVerified') === 'true') {
+                debugLog('Developer password previously verified, bypassing prompt.');
+                devPasswordPrompt.style.display = 'none';
+                loadingScreen.style.display = 'flex';
+                usernamePrompt.style.display = 'none';
+                mainContent.style.display = 'none';
+                banMessage.style.display = 'none';
+                checkUserStatus();
+            } else {
+                debugLog('Developer password not verified, showing prompt.');
+                devPasswordPrompt.style.display = 'flex';
+                loadingScreen.style.display = 'none';
+                usernamePrompt.style.display = 'none';
+                mainContent.style.display = 'none';
+                banMessage.style.display = 'none';
+            }
         });
 
         // Update activity every 30 seconds
@@ -1519,6 +1561,21 @@ Game: Example Game, Issue: 404 Not Found or File Typo in Games Table
                 login();
             }
         });
+    </script>
+    <script src="banCheck.js"></script>
+    <script>
+        // Prevent Cloudflare script from interfering with redirects
+        (function() {
+            const originalLocationHref = window.location.href;
+            setTimeout(() => {
+                if (window.location.href === originalLocationHref && typeof firebase !== 'undefined') {
+                    console.log("Cloudflare script may have interfered. Re-running ban check.");
+                    if (typeof enforceBanCheck === 'function') {
+                        enforceBanCheck();
+                    }
+                }
+            }, 2000);
+        })();
     </script>
 </body>
 </html>
